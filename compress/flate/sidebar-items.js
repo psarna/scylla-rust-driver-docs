@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Decoder","The structure that is used to decode an LZ4 data stream. This wraps an internal reader which is used as the source of all data."]]});

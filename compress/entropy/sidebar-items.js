@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["ari","Arithmetic encoder/decoder using the Range encoder underneath. Requires `entropy` feature, enabled by default Can be used in a general case of entropy coding stage. Supposed to be fast."]]});

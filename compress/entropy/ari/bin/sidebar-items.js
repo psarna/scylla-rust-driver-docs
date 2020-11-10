@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Model","A binary value frequency model"],["SumProxy","A proxy model for the combination of two binary models using equation: (wa * A + wb * B) >> ws"]]});

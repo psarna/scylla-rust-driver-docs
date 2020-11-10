@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["State32","Adler state for 32 bits"]]});

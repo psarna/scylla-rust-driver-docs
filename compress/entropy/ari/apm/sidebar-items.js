@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Bit","Bit probability model"],["Gate","Binary context gate maps an input binary probability into a new one by interpolating between internal maps in non-linear space"]],"type":[["BinCoords",""],["FlatProbability",""],["WideProbability",""]]});

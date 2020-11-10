@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Decoder","This structure is used to decode a run length encoded stream. This wraps an internal reader which is read from when this decoder's read method is called."],["Encoder","This structure is used to compress a stream of bytes using a RLE compression algorithm. This is a wrapper around an internal writer which bytes will be written to."]]});
