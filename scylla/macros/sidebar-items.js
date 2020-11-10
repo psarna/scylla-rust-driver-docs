@@ -1,0 +1,1 @@
+initSidebarItems({"derive":[["FromRow","#[derive(FromRow)] derives FromRow for struct Works only on simple structs without generics etc #[derive(FromRow)] derives FromRow for struct Works only on simple structs without generics etc"]]});

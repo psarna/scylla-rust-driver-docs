@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Query","CQL query statement."]]});

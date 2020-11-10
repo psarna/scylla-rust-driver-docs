@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CQLValue",""],["Result",""]],"fn":[["deserialize",""]],"struct":[["ColumnSpec",""],["Prepared",""],["PreparedMetadata",""],["ResultMetadata",""],["Row",""],["Rows",""],["SchemaChange",""],["SetKeyspace",""]]});

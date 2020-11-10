@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PreparedStatement","Represents a statement prepared on the server."]]});
