@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/num_enum_derive-0.5.1/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../num_enum_derive/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/num_enum_derive-0.5.1/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../num_enum_derive/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -692,20 +694,20 @@
 };
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">die</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>:<span class="ident">expr</span><span class="op">=&gt;</span>
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>:<span class="ident">expr</span><span class="op">=</span><span class="op">&gt;</span>
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>:<span class="ident">expr</span>
-    ) <span class="op">=&gt;</span> (
+    ) <span class="op">=</span><span class="op">&gt;</span> (
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>));
     );
 
     (
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>:<span class="ident">expr</span>
-    ) <span class="op">=&gt;</span> (
-        <span class="macro">die</span><span class="macro">!</span>(<span class="ident">Span</span>::<span class="ident">call_site</span>() <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>)
+    ) <span class="op">=</span><span class="op">&gt;</span> (
+        <span class="macro">die</span><span class="macro">!</span>(<span class="ident">Span</span>::<span class="ident">call_site</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>)
     );
 }
 
-<span class="kw">fn</span> <span class="ident">literal</span>(<span class="ident">i</span>: <span class="ident">u64</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
+<span class="kw">fn</span> <span class="ident">literal</span>(<span class="ident">i</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Expr</span> {
     <span class="kw">let</span> <span class="ident">literal</span> <span class="op">=</span> <span class="ident">LitInt</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">to_string</span>(), <span class="ident">Span</span>::<span class="ident">call_site</span>());
     <span class="macro">parse_quote</span><span class="macro">!</span> {
         #<span class="ident">literal</span>
@@ -722,7 +724,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">NumEnumVariantAttributes</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">items</span>: <span class="ident">input</span>.<span class="ident">parse_terminated</span>(<span class="ident">NumEnumVariantAttributeItem</span>::<span class="ident">parse</span>)<span class="question-mark">?</span>,
         })
@@ -735,7 +737,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">NumEnumVariantAttributeItem</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">lookahead</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">lookahead1</span>();
         <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">kw</span>::<span class="ident">default</span>) {
             <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="self">Self</span>::<span class="ident">Default</span>)
@@ -752,7 +754,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">VariantDefaultAttribute</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">keyword</span>: <span class="ident">input</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
         })
@@ -760,7 +762,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Spanned</span> <span class="kw">for</span> <span class="ident">VariantDefaultAttribute</span> {
-    <span class="kw">fn</span> <span class="ident">span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Span</span> {
+    <span class="kw">fn</span> <span class="ident">span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Span</span> {
         <span class="self">self</span>.<span class="ident">keyword</span>.<span class="ident">span</span>()
     }
 }
@@ -773,7 +775,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">VariantAlternativesAttribute</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">content</span>;
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">keyword</span>: <span class="ident">input</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
@@ -785,7 +787,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Spanned</span> <span class="kw">for</span> <span class="ident">VariantAlternativesAttribute</span> {
-    <span class="kw">fn</span> <span class="ident">span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Span</span> {
+    <span class="kw">fn</span> <span class="ident">span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Span</span> {
         <span class="self">self</span>.<span class="ident">keyword</span>.<span class="ident">span</span>()
     }
 }
@@ -805,11 +807,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">VariantInfo</span> {
-    <span class="kw">fn</span> <span class="ident">all_values</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Expr</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">all_values</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Expr</span><span class="op">&gt;</span> {
         ::<span class="ident">core</span>::<span class="ident">iter</span>::<span class="ident">once</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">canonical_value</span>).<span class="ident">chain</span>(<span class="self">self</span>.<span class="ident">alternative_values</span>.<span class="ident">iter</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">is_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">alternative_values</span>.<span class="ident">is_empty</span>()
     }
 }
@@ -821,41 +823,41 @@
 }
 
 <span class="kw">impl</span> <span class="ident">EnumInfo</span> {
-    <span class="kw">fn</span> <span class="ident">has_default_variant</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">has_default_variant</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">default</span>().<span class="ident">is_some</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">has_complex_variant</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">has_complex_variant</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">variants</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">is_complex</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">default</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Ident</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Ident</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">variants</span>
             .<span class="ident">iter</span>()
             .<span class="ident">find</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">is_default</span>)
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">ident</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">first_default_attr_span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">first_default_attr_span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">variants</span>
             .<span class="ident">iter</span>()
             .<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">attr_spans</span>.<span class="ident">default</span>.<span class="ident">first</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">first_alternatives_attr_span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">first_alternatives_attr_span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">variants</span>
             .<span class="ident">iter</span>()
             .<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">attr_spans</span>.<span class="ident">alternatives</span>.<span class="ident">first</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">variant_idents</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">variant_idents</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">variants</span>
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">variant</span><span class="op">|</span> <span class="ident">variant</span>.<span class="ident">ident</span>.<span class="ident">clone</span>())
             .<span class="ident">collect</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">expression_idents</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">expression_idents</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">variants</span>
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> {
@@ -867,7 +869,7 @@
             .<span class="ident">collect</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">variant_expressions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">variant_expressions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">variants</span>
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">variant</span><span class="op">|</span> <span class="ident">variant</span>.<span class="ident">all_values</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>())
@@ -876,7 +878,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">EnumInfo</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>({
             <span class="kw">let</span> <span class="ident">input</span>: <span class="ident">DeriveInput</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">ident</span>;
@@ -884,11 +886,11 @@
                 <span class="ident">data</span>
             } <span class="kw">else</span> {
                 <span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">input</span>.<span class="ident">data</span> {
-                    <span class="ident">Data</span>::<span class="ident">Union</span>(<span class="ident">data</span>) <span class="op">=&gt;</span> <span class="ident">data</span>.<span class="ident">union_token</span>.<span class="ident">span</span>,
-                    <span class="ident">Data</span>::<span class="ident">Struct</span>(<span class="ident">data</span>) <span class="op">=&gt;</span> <span class="ident">data</span>.<span class="ident">struct_token</span>.<span class="ident">span</span>,
-                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                    <span class="ident">Data</span>::<span class="ident">Union</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>.<span class="ident">union_token</span>.<span class="ident">span</span>,
+                    <span class="ident">Data</span>::<span class="ident">Struct</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>.<span class="ident">struct_token</span>.<span class="ident">span</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
                 };
-                <span class="macro">die</span><span class="macro">!</span>(<span class="ident">span</span> <span class="op">=&gt;</span> <span class="string">&quot;Expected enum&quot;</span>);
+                <span class="macro">die</span><span class="macro">!</span>(<span class="ident">span</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Expected enum&quot;</span>);
             };
 
             <span class="kw">let</span> <span class="ident">repr</span>: <span class="ident">Ident</span> <span class="op">=</span> {
@@ -897,10 +899,10 @@
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">attr</span>) <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">next</span>() {
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">Meta</span>::<span class="ident">List</span>(<span class="ident">meta_list</span>)) <span class="op">=</span> <span class="ident">attr</span>.<span class="ident">parse_meta</span>() {
                             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span> <span class="ident">meta_list</span>.<span class="ident">path</span>.<span class="ident">get_ident</span>() {
-                                <span class="kw">if</span> <span class="ident">ident</span> <span class="op">==</span> <span class="string">&quot;repr&quot;</span> {
+                                <span class="kw">if</span> <span class="ident">ident</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;repr&quot;</span> {
                                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nested</span> <span class="op">=</span> <span class="ident">meta_list</span>.<span class="ident">nested</span>.<span class="ident">iter</span>();
-                                    <span class="kw">if</span> <span class="ident">nested</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="number">1</span> {
-                                        <span class="macro">die</span><span class="macro">!</span>(<span class="ident">ident</span>.<span class="ident">span</span>()<span class="op">=&gt;</span>
+                                    <span class="kw">if</span> <span class="ident">nested</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
+                                        <span class="macro">die</span><span class="macro">!</span>(<span class="ident">ident</span>.<span class="ident">span</span>()<span class="op">=</span><span class="op">&gt;</span>
                                             <span class="string">&quot;Expected exactly one `repr` argument&quot;</span>
                                         );
                                     }
@@ -908,8 +910,8 @@
                                     <span class="kw">let</span> <span class="ident">repr</span>: <span class="ident">Ident</span> <span class="op">=</span> <span class="macro">parse_quote</span><span class="macro">!</span> {
                                         #<span class="ident">repr</span>
                                     };
-                                    <span class="kw">if</span> <span class="ident">repr</span> <span class="op">==</span> <span class="string">&quot;C&quot;</span> {
-                                        <span class="macro">die</span><span class="macro">!</span>(<span class="ident">repr</span>.<span class="ident">span</span>()<span class="op">=&gt;</span>
+                                    <span class="kw">if</span> <span class="ident">repr</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;C&quot;</span> {
+                                        <span class="macro">die</span><span class="macro">!</span>(<span class="ident">repr</span>.<span class="ident">span</span>()<span class="op">=</span><span class="op">&gt;</span>
                                             <span class="string">&quot;repr(C) doesn&#39;t have a well defined size&quot;</span>
                                         );
                                     } <span class="kw">else</span> {
@@ -932,8 +934,8 @@
                 <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="ident">variant</span>.<span class="ident">ident</span>;
 
                 <span class="kw">let</span> <span class="ident">discriminant</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">variant</span>.<span class="ident">discriminant</span> {
-                    <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=&gt;</span> <span class="ident">d</span>.<span class="number">1</span>,
-                    <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">next_discriminant</span>.<span class="ident">clone</span>(),
+                    <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="number">1</span>,
+                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">next_discriminant</span>.<span class="ident">clone</span>(),
                 };
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">attr_spans</span>: <span class="ident">AttributeSpans</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
@@ -949,19 +951,19 @@
                         <span class="kw">continue</span>;
                     }
                     <span class="kw">match</span> <span class="ident">attribute</span>.<span class="ident">parse_args_with</span>(<span class="ident">NumEnumVariantAttributes</span>::<span class="ident">parse</span>) {
-                        <span class="prelude-val">Ok</span>(<span class="ident">variant_attributes</span>) <span class="op">=&gt;</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">variant_attributes</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="kw">for</span> <span class="ident">variant_attribute</span> <span class="kw">in</span> <span class="ident">variant_attributes</span>.<span class="ident">items</span>.<span class="ident">iter</span>() {
                                 <span class="kw">match</span> <span class="ident">variant_attribute</span> {
-                                    <span class="ident">NumEnumVariantAttributeItem</span>::<span class="ident">Default</span>(<span class="ident">default</span>) <span class="op">=&gt;</span> {
+                                    <span class="ident">NumEnumVariantAttributeItem</span>::<span class="ident">Default</span>(<span class="ident">default</span>) <span class="op">=</span><span class="op">&gt;</span> {
                                         <span class="kw">if</span> <span class="ident">has_default_variant</span> {
-                                            <span class="macro">die</span><span class="macro">!</span>(<span class="ident">default</span>.<span class="ident">span</span>()<span class="op">=&gt;</span>
+                                            <span class="macro">die</span><span class="macro">!</span>(<span class="ident">default</span>.<span class="ident">span</span>()<span class="op">=</span><span class="op">&gt;</span>
                                                 <span class="string">&quot;Multiple variants marked `#[num_enum(default)]` found&quot;</span>
                                             );
                                         }
                                         <span class="ident">attr_spans</span>.<span class="ident">default</span>.<span class="ident">push</span>(<span class="ident">default</span>.<span class="ident">span</span>());
                                         <span class="ident">is_default</span> <span class="op">=</span> <span class="bool-val">true</span>;
                                     }
-                                    <span class="ident">NumEnumVariantAttributeItem</span>::<span class="ident">Alternatives</span>(<span class="ident">alternatives</span>) <span class="op">=&gt;</span> {
+                                    <span class="ident">NumEnumVariantAttributeItem</span>::<span class="ident">Alternatives</span>(<span class="ident">alternatives</span>) <span class="op">=</span><span class="op">&gt;</span> {
                                         <span class="ident">attr_spans</span>.<span class="ident">alternatives</span>.<span class="ident">push</span>(<span class="ident">alternatives</span>.<span class="ident">span</span>());
                                         <span class="ident">alternative_values</span>
                                             .<span class="ident">extend</span>(<span class="ident">alternatives</span>.<span class="ident">expressions</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>());
@@ -969,14 +971,14 @@
                                 }
                             }
                         }
-                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
-                            <span class="macro">die</span><span class="macro">!</span>(<span class="ident">attribute</span>.<span class="ident">span</span>()<span class="op">=&gt;</span>
+                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="macro">die</span><span class="macro">!</span>(<span class="ident">attribute</span>.<span class="ident">span</span>()<span class="op">=</span><span class="op">&gt;</span>
                                 <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Invalid attribute: {}&quot;</span>, <span class="ident">err</span>)
                             );
                         }
                     }
 
-                    <span class="ident">has_default_variant</span> <span class="op">|=</span> <span class="ident">is_default</span>;
+                    <span class="ident">has_default_variant</span> <span class="op">|</span><span class="op">=</span> <span class="ident">is_default</span>;
                 }
 
                 <span class="kw">let</span> <span class="ident">canonical_value</span> <span class="op">=</span> <span class="ident">discriminant</span>.<span class="ident">clone</span>();
@@ -1025,13 +1027,13 @@
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">proc_macro_derive</span>(<span class="ident">IntoPrimitive</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_into_primitive</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-&gt;</span> <span class="ident">TokenStream</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_into_primitive</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TokenStream</span> {
     <span class="kw">let</span> <span class="ident">EnumInfo</span> { <span class="ident">name</span>, <span class="ident">repr</span>, .. } <span class="op">=</span> <span class="macro">parse_macro_input</span><span class="macro">!</span>(<span class="ident">input</span> <span class="kw">as</span> <span class="ident">EnumInfo</span>);
 
     <span class="ident">TokenStream</span>::<span class="ident">from</span>(<span class="macro">quote</span><span class="macro">!</span> {
         <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">repr</span> {
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="ident">from</span> (<span class="ident">enum_value</span>: #<span class="ident">name</span>) <span class="op">-&gt;</span> <span class="self">Self</span>
+            <span class="kw">fn</span> <span class="ident">from</span> (<span class="ident">enum_value</span>: #<span class="ident">name</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
             {
                 <span class="ident">enum_value</span> <span class="kw">as</span> <span class="self">Self</span>
             }
@@ -1067,13 +1069,13 @@
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">proc_macro_derive</span>(<span class="ident">FromPrimitive</span>, <span class="ident">attributes</span>(<span class="ident">num_enum</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_from_primitive</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-&gt;</span> <span class="ident">TokenStream</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_from_primitive</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TokenStream</span> {
     <span class="kw">let</span> <span class="ident">enum_info</span>: <span class="ident">EnumInfo</span> <span class="op">=</span> <span class="macro">parse_macro_input</span><span class="macro">!</span>(<span class="ident">input</span>);
     <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">Ident</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">get_crate_name</span>(), <span class="ident">Span</span>::<span class="ident">call_site</span>());
 
     <span class="kw">let</span> <span class="ident">default_ident</span>: <span class="ident">Ident</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">enum_info</span>.<span class="ident">default</span>() {
-        <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=&gt;</span> <span class="ident">ident</span>.<span class="ident">clone</span>(),
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ident</span>.<span class="ident">clone</span>(),
+        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">Span</span>::<span class="ident">call_site</span>();
             <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span>
                 <span class="string">&quot;#[derive(FromPrimitive)] requires a variant marked with `#[num_enum(default)]`&quot;</span>;
@@ -1086,8 +1088,8 @@
     } <span class="op">=</span> <span class="ident">enum_info</span>;
 
     <span class="kw">let</span> <span class="ident">variant_idents</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">variant_idents</span>();
-    <span class="kw">let</span> <span class="ident">expression_idents</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">expression_idents</span>();
-    <span class="kw">let</span> <span class="ident">variant_expressions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">variant_expressions</span>();
+    <span class="kw">let</span> <span class="ident">expression_idents</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">expression_idents</span>();
+    <span class="kw">let</span> <span class="ident">variant_expressions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">variant_expressions</span>();
 
     <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">variant_idents</span>.<span class="ident">len</span>(), <span class="ident">variant_expressions</span>.<span class="ident">len</span>());
 
@@ -1095,7 +1097,7 @@
         <span class="kw">impl</span> ::#<span class="ident">krate</span>::<span class="ident">FromPrimitive</span> <span class="kw">for</span> #<span class="ident">name</span> {
             <span class="kw">type</span> <span class="ident">Primitive</span> <span class="op">=</span> #<span class="ident">repr</span>;
 
-            <span class="kw">fn</span> <span class="ident">from_primitive</span>(<span class="ident">number</span>: <span class="self">Self</span>::<span class="ident">Primitive</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+            <span class="kw">fn</span> <span class="ident">from_primitive</span>(<span class="ident">number</span>: <span class="self">Self</span>::<span class="ident">Primitive</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                 <span class="comment">// Use intermediate const(s) so that enums defined like</span>
                 <span class="comment">// `Two = ONE + 1u8` work properly.</span>
                 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_upper_case_globals</span>)]</span>
@@ -1108,10 +1110,10 @@
                 <span class="kw">match</span> <span class="ident">number</span> {
                     #(
                         #( #<span class="ident">expression_idents</span> )<span class="op">|</span><span class="op">*</span>
-                        <span class="op">=&gt;</span> <span class="self">Self</span>::#<span class="ident">variant_idents</span>,
+                        <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::#<span class="ident">variant_idents</span>,
                     )<span class="op">*</span>
                     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_patterns</span>)]</span>
-                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="self">Self</span>::#<span class="ident">default_ident</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::#<span class="ident">default_ident</span>,
                 }
             }
         }
@@ -1120,7 +1122,7 @@
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">from</span> (
                 <span class="ident">number</span>: #<span class="ident">repr</span>,
-            ) <span class="op">-&gt;</span> <span class="self">Self</span> {
+            ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                 ::#<span class="ident">krate</span>::<span class="ident">FromPrimitive</span>::<span class="ident">from_primitive</span>(<span class="ident">number</span>)
             }
         }
@@ -1135,7 +1137,7 @@
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">try_from_primitive</span> (
                 <span class="ident">number</span>: <span class="self">Self</span>::<span class="ident">Primitive</span>,
-            ) <span class="op">-&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>
+            ) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>
                 <span class="self">Self</span>,
                 ::#<span class="ident">krate</span>::<span class="ident">TryFromPrimitiveError</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
             <span class="op">&gt;</span>
@@ -1174,7 +1176,7 @@
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">proc_macro_derive</span>(<span class="ident">TryFromPrimitive</span>, <span class="ident">attributes</span>(<span class="ident">num_enum</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_try_from_primitive</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-&gt;</span> <span class="ident">TokenStream</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_try_from_primitive</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TokenStream</span> {
     <span class="kw">let</span> <span class="ident">enum_info</span>: <span class="ident">EnumInfo</span> <span class="op">=</span> <span class="macro">parse_macro_input</span><span class="macro">!</span>(<span class="ident">input</span>);
     <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">Ident</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">get_crate_name</span>(), <span class="ident">Span</span>::<span class="ident">call_site</span>());
 
@@ -1183,22 +1185,22 @@
     } <span class="op">=</span> <span class="ident">enum_info</span>;
 
     <span class="kw">let</span> <span class="ident">variant_idents</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">variant_idents</span>();
-    <span class="kw">let</span> <span class="ident">expression_idents</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">expression_idents</span>();
-    <span class="kw">let</span> <span class="ident">variant_expressions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">variant_expressions</span>();
+    <span class="kw">let</span> <span class="ident">expression_idents</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">expression_idents</span>();
+    <span class="kw">let</span> <span class="ident">variant_expressions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_info</span>.<span class="ident">variant_expressions</span>();
 
     <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">variant_idents</span>.<span class="ident">len</span>(), <span class="ident">variant_expressions</span>.<span class="ident">len</span>());
 
     <span class="kw">let</span> <span class="ident">default_arm</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">enum_info</span>.<span class="ident">default</span>() {
-        <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="macro">quote</span><span class="macro">!</span> {
-                <span class="kw">_</span> <span class="op">=&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(
                     #<span class="ident">name</span>::#<span class="ident">ident</span>
                 )
             }
         }
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="macro">quote</span><span class="macro">!</span> {
-                <span class="kw">_</span> <span class="op">=&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Err</span>(
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Err</span>(
                     ::#<span class="ident">krate</span>::<span class="ident">TryFromPrimitiveError</span> { <span class="ident">number</span> }
                 )
             }
@@ -1213,7 +1215,7 @@
 
             <span class="kw">fn</span> <span class="ident">try_from_primitive</span> (
                 <span class="ident">number</span>: <span class="self">Self</span>::<span class="ident">Primitive</span>,
-            ) <span class="op">-&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>
+            ) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>
                 <span class="self">Self</span>,
                 ::#<span class="ident">krate</span>::<span class="ident">TryFromPrimitiveError</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
             <span class="op">&gt;</span> {
@@ -1229,7 +1231,7 @@
                 <span class="kw">match</span> <span class="ident">number</span> {
                     #(
                         #( #<span class="ident">expression_idents</span> )<span class="op">|</span><span class="op">*</span>
-                        <span class="op">=&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="self">Self</span>::#<span class="ident">variant_idents</span>),
+                        <span class="op">=</span><span class="op">&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="self">Self</span>::#<span class="ident">variant_idents</span>),
                     )<span class="op">*</span>
                     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_patterns</span>)]</span>
                     #<span class="ident">default_arm</span>,
@@ -1243,7 +1245,7 @@
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">try_from</span> (
                 <span class="ident">number</span>: #<span class="ident">repr</span>,
-            ) <span class="op">-&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, ::#<span class="ident">krate</span>::<span class="ident">TryFromPrimitiveError</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>
+            ) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">core</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, ::#<span class="ident">krate</span>::<span class="ident">TryFromPrimitiveError</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>
             {
                 ::#<span class="ident">krate</span>::<span class="ident">TryFromPrimitive</span>::<span class="ident">try_from_primitive</span>(<span class="ident">number</span>)
             }
@@ -1252,7 +1254,7 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;proc-macro-crate&quot;</span>)]</span>
-<span class="kw">fn</span> <span class="ident">get_crate_name</span>() <span class="op">-&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">get_crate_name</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
     ::<span class="ident">proc_macro_crate</span>::<span class="ident">crate_name</span>(<span class="string">&quot;num_enum&quot;</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
         <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Warning: {}\n    =&gt; defaulting to `num_enum`&quot;</span>, <span class="ident">err</span>,);
         <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;num_enum&quot;</span>)
@@ -1266,7 +1268,7 @@
 <span class="comment">//</span>
 <span class="comment">// See https://github.com/illicitonion/num_enum/issues/18</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;proc-macro-crate&quot;</span>))]</span>
-<span class="kw">fn</span> <span class="ident">get_crate_name</span>() <span class="op">-&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">get_crate_name</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
     <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;num_enum&quot;</span>)
 }
 
@@ -1307,7 +1309,7 @@
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">proc_macro_derive</span>(<span class="ident">UnsafeFromPrimitive</span>, <span class="ident">attributes</span>(<span class="ident">num_enum</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_unsafe_from_primitive</span>(<span class="ident">stream</span>: <span class="ident">TokenStream</span>) <span class="op">-&gt;</span> <span class="ident">TokenStream</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_unsafe_from_primitive</span>(<span class="ident">stream</span>: <span class="ident">TokenStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TokenStream</span> {
     <span class="kw">let</span> <span class="ident">enum_info</span> <span class="op">=</span> <span class="macro">parse_macro_input</span><span class="macro">!</span>(<span class="ident">stream</span> <span class="kw">as</span> <span class="ident">EnumInfo</span>);
 
     <span class="kw">if</span> <span class="ident">enum_info</span>.<span class="ident">has_default_variant</span>() {
@@ -1352,7 +1354,7 @@ Transmutes `number: {repr}` into a [`{name}`].
         <span class="kw">impl</span> #<span class="ident">name</span> {
             <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> #<span class="ident">doc_string</span>]</span>
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_unchecked</span>(<span class="ident">number</span>: #<span class="ident">repr</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+            <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_unchecked</span>(<span class="ident">number</span>: #<span class="ident">repr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                 ::<span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">number</span>)
             }
         }

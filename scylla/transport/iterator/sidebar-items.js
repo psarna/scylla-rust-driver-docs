@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["RowIterator",""],["TypedRowIterator",""]]});
+initSidebarItems({"enum":[["NextRowError","Couldn't get next typed row from the iterator"]],"struct":[["RowIterator",""],["TypedRowIterator",""]]});

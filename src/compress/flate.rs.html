@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/compress-0.2.1/src/flate.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>flate.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../compress/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/compress-0.2.1/src/flate.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>flate.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../compress/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -667,18 +669,18 @@
     <span class="ident">NotEnoughBits</span>,
 }
 
-<span class="kw">fn</span> <span class="ident">error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">e</span>: <span class="ident">Error</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">e</span>: <span class="ident">Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="prelude-val">Err</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(
         <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">InvalidInput</span>,
         <span class="kw">match</span> <span class="ident">e</span> {
-            <span class="ident">Error</span>::<span class="ident">HuffmanTreeTooLarge</span> <span class="op">=&gt;</span> <span class="string">&quot;huffman tree too large&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidBlockCode</span> <span class="op">=&gt;</span> <span class="string">&quot;invalid block code&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanHeaderSymbol</span> <span class="op">=&gt;</span> <span class="string">&quot;invalid huffman header symbol&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanTree</span> <span class="op">=&gt;</span> <span class="string">&quot;invalid huffman tree&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanTreeHeader</span> <span class="op">=&gt;</span> <span class="string">&quot;invalid huffman tree header&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanCode</span> <span class="op">=&gt;</span> <span class="string">&quot;invalid huffman code&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidStaticSize</span> <span class="op">=&gt;</span> <span class="string">&quot;invalid static size&quot;</span>,
-            <span class="ident">Error</span>::<span class="ident">NotEnoughBits</span> <span class="op">=&gt;</span> <span class="string">&quot;not enough bits&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">HuffmanTreeTooLarge</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;huffman tree too large&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">InvalidBlockCode</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid block code&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanHeaderSymbol</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid huffman header symbol&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanTree</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid huffman tree&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanTreeHeader</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid huffman tree header&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">InvalidHuffmanCode</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid huffman code&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">InvalidStaticSize</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid static size&quot;</span>,
+            <span class="ident">Error</span>::<span class="ident">NotEnoughBits</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;not enough bits&quot;</span>,
         }
     ))
 }
@@ -697,25 +699,25 @@
     <span class="doccomment">/// Constructs a new huffman tree for decoding. If the given array has</span>
     <span class="doccomment">/// length N, then the huffman tree can be used to decode N symbols. Each</span>
     <span class="doccomment">/// entry in the array corresponds to the length of the nth symbol.</span>
-    <span class="kw">fn</span> <span class="ident">construct</span>(<span class="ident">lens</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HuffmanTree</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">construct</span>(<span class="ident">lens</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HuffmanTree</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tree</span> <span class="op">=</span> <span class="ident">HuffmanTree</span> {
             <span class="ident">count</span>: [<span class="number">0</span>; <span class="ident">MAXBITS</span> <span class="op">+</span> <span class="number">1</span>],
             <span class="ident">symbol</span>: [<span class="number">0</span>; <span class="ident">MAXCODES</span> <span class="kw">as</span> <span class="ident">usize</span>],
         };
         <span class="comment">// Collect the lengths of all symbols</span>
         <span class="kw">for</span> <span class="ident">len</span> <span class="kw">in</span> <span class="ident">lens</span>.<span class="ident">iter</span>() {
-            <span class="ident">tree</span>.<span class="ident">count</span>[<span class="kw-2">*</span><span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">tree</span>.<span class="ident">count</span>[<span class="kw-2">*</span><span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
         <span class="comment">// If there weren&#39;t actually any codes, then we&#39;re done</span>
-        <span class="kw">if</span> <span class="ident">tree</span>.<span class="ident">count</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="ident">usize</span> <span class="op">==</span> <span class="ident">lens</span>.<span class="ident">len</span>() { <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">tree</span>) }
+        <span class="kw">if</span> <span class="ident">tree</span>.<span class="ident">count</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="ident">usize</span> <span class="op">=</span><span class="op">=</span> <span class="ident">lens</span>.<span class="ident">len</span>() { <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">tree</span>) }
 
         <span class="comment">// Make sure that this tree is sane. Each bit gives us 2x more codes to</span>
         <span class="comment">// work with, but if the counts add up to greater than the available</span>
         <span class="comment">// amount, then this is an invalid table.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> <span class="op">=</span> <span class="number">1</span>;
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..(<span class="ident">MAXBITS</span> <span class="op">+</span> <span class="number">1</span>) {
-            <span class="ident">left</span> <span class="op">*=</span> <span class="number">2</span>;
-            <span class="ident">left</span> <span class="op">-=</span> <span class="ident">tree</span>.<span class="ident">count</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">isize</span>;
+            <span class="ident">left</span> <span class="kw-2">*</span><span class="op">=</span> <span class="number">2</span>;
+            <span class="ident">left</span> <span class="op">-</span><span class="op">=</span> <span class="ident">tree</span>.<span class="ident">count</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">isize</span>;
             <span class="kw">if</span> <span class="ident">left</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanTree</span>) }
         }
 
@@ -728,9 +730,9 @@
         <span class="comment">// Insert all symbols into the table, in sorted order using the `offs`</span>
         <span class="comment">// array generated above.</span>
         <span class="kw">for</span> (<span class="ident">sym</span>, <span class="kw-2">&amp;</span><span class="ident">len</span>) <span class="kw">in</span> <span class="ident">lens</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">len</span> <span class="op">!=</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">len</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="ident">tree</span>.<span class="ident">symbol</span>[<span class="ident">offs</span>[<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="ident">sym</span> <span class="kw">as</span> <span class="ident">u16</span>;
-                <span class="ident">offs</span>[<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">offs</span>[<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             }
         }
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">tree</span>);
@@ -743,21 +745,21 @@
     <span class="doccomment">/// by a sequence of lengths. The codepoint being decoded needs to figure</span>
     <span class="doccomment">/// out what lengths it&#39;s between, and then within that range we can index</span>
     <span class="doccomment">/// into the whole symbol array to pluck out the right symbol.</span>
-    <span class="kw">fn</span> <span class="ident">decode</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Read</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Decoder</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">decode</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Read</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Decoder</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> {
         <span class="comment">// this could be a lot faster.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">code</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">first</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">len</span> <span class="kw">in</span> <span class="number">1</span>..(<span class="ident">MAXBITS</span> <span class="op">+</span> <span class="number">1</span>) {
-            <span class="ident">code</span> <span class="op">|=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="ident">s</span>.<span class="ident">bits</span>(<span class="number">1</span>));
+            <span class="ident">code</span> <span class="op">|</span><span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="ident">s</span>.<span class="ident">bits</span>(<span class="number">1</span>));
             <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>[<span class="ident">len</span>];
             <span class="kw">if</span> <span class="ident">code</span> <span class="op">&lt;</span> <span class="ident">first</span> <span class="op">+</span> <span class="ident">count</span> {
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">symbol</span>[(<span class="ident">index</span> <span class="op">+</span> (<span class="ident">code</span> <span class="op">-</span> <span class="ident">first</span>)) <span class="kw">as</span> <span class="ident">usize</span>])
             }
-            <span class="ident">index</span> <span class="op">+=</span> <span class="ident">count</span>;
-            <span class="ident">first</span> <span class="op">+=</span> <span class="ident">count</span>;
-            <span class="ident">first</span> <span class="op">&lt;&lt;</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">code</span> <span class="op">&lt;&lt;</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">index</span> <span class="op">+</span><span class="op">=</span> <span class="ident">count</span>;
+            <span class="ident">first</span> <span class="op">+</span><span class="op">=</span> <span class="ident">count</span>;
+            <span class="ident">first</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">code</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>;
         }
         <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">NotEnoughBits</span>);
     }
@@ -796,7 +798,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Read</span><span class="op">&gt;</span> <span class="ident">Decoder</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Creates a new flate decoder which will read data from the specified</span>
     <span class="doccomment">/// source</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">r</span>: <span class="ident">R</span>) <span class="op">-&gt;</span> <span class="ident">Decoder</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">r</span>: <span class="ident">R</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Decoder</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
         <span class="ident">Decoder</span> {
             <span class="ident">r</span>: <span class="ident">r</span>,
             <span class="ident">output</span>: <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">HISTORY</span>),
@@ -809,16 +811,16 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">pos</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="self">self</span>.<span class="ident">block</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">4096</span>);
-        <span class="kw">if</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">1</span>)) <span class="op">==</span> <span class="number">1</span> { <span class="self">self</span>.<span class="ident">eof</span> <span class="op">=</span> <span class="bool-val">true</span>; }
+        <span class="kw">if</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">1</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">1</span> { <span class="self">self</span>.<span class="ident">eof</span> <span class="op">=</span> <span class="bool-val">true</span>; }
         <span class="kw">match</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">2</span>)) {
-            <span class="number">0</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">statik</span>(),
-            <span class="number">1</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">fixed</span>(),
-            <span class="number">2</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">dynamic</span>(),
-            <span class="number">3</span> <span class="op">=&gt;</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidBlockCode</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">statik</span>(),
+            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">fixed</span>(),
+            <span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">dynamic</span>(),
+            <span class="number">3</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidBlockCode</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 
@@ -840,7 +842,7 @@
                 <span class="ident">n</span>
             )};
         }
-        <span class="self">self</span>.<span class="ident">outpos</span> <span class="op">+=</span> <span class="ident">n</span>;
+        <span class="self">self</span>.<span class="ident">outpos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">n</span>;
         <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="ident">amt</span> {
             <span class="kw">unsafe</span> { <span class="ident">copy_nonoverlapping</span>(
                 <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">block</span>[<span class="ident">from</span><span class="op">+</span><span class="ident">n</span>],
@@ -851,10 +853,10 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">statik</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">statik</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">r</span>.<span class="ident">read_u16</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>());
         <span class="kw">let</span> <span class="ident">nlen</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">r</span>.<span class="ident">read_u16</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>());
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">nlen</span> <span class="op">!=</span> <span class="ident">len</span> { <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidStaticSize</span>) }
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">nlen</span> <span class="op">!</span><span class="op">=</span> <span class="ident">len</span> { <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidStaticSize</span>) }
         <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">r</span>.<span class="ident">push_exactly</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">block</span>));
         <span class="self">self</span>.<span class="ident">update_output</span>(<span class="number">0</span>);
         <span class="self">self</span>.<span class="ident">bitcnt</span> <span class="op">=</span> <span class="number">0</span>;
@@ -864,20 +866,20 @@
 
     <span class="comment">// Bytes in the stream are LSB first, so the bitbuf is appended to from the</span>
     <span class="comment">// left and consumed from the right.</span>
-    <span class="kw">fn</span> <span class="ident">bits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cnt</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">bits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cnt</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> {
         <span class="kw">while</span> <span class="self">self</span>.<span class="ident">bitcnt</span> <span class="op">&lt;</span> <span class="ident">cnt</span> {
             <span class="kw">let</span> <span class="ident">byte</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">r</span>.<span class="ident">read_u8</span>());
-            <span class="self">self</span>.<span class="ident">bitbuf</span> <span class="op">|=</span> (<span class="ident">byte</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">&lt;&lt;</span> <span class="self">self</span>.<span class="ident">bitcnt</span>;
-            <span class="self">self</span>.<span class="ident">bitcnt</span> <span class="op">+=</span> <span class="number">8</span>;
+            <span class="self">self</span>.<span class="ident">bitbuf</span> <span class="op">|</span><span class="op">=</span> (<span class="ident">byte</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">bitcnt</span>;
+            <span class="self">self</span>.<span class="ident">bitcnt</span> <span class="op">+</span><span class="op">=</span> <span class="number">8</span>;
         }
-        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bitbuf</span> <span class="op">&amp;</span> ((<span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">cnt</span>) <span class="op">-</span> <span class="number">1</span>);
-        <span class="self">self</span>.<span class="ident">bitbuf</span> <span class="op">&gt;&gt;</span><span class="op">=</span> <span class="ident">cnt</span>;
-        <span class="self">self</span>.<span class="ident">bitcnt</span> <span class="op">-=</span> <span class="ident">cnt</span>;
+        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bitbuf</span> <span class="op">&amp;</span> ((<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">cnt</span>) <span class="op">-</span> <span class="number">1</span>);
+        <span class="self">self</span>.<span class="ident">bitbuf</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">cnt</span>;
+        <span class="self">self</span>.<span class="ident">bitcnt</span> <span class="op">-</span><span class="op">=</span> <span class="ident">cnt</span>;
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">ret</span> <span class="kw">as</span> <span class="ident">u16</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">codes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">lens</span>: <span class="kw-2">&amp;</span><span class="ident">HuffmanTree</span>,
-             <span class="ident">dist</span>: <span class="kw-2">&amp;</span><span class="ident">HuffmanTree</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+             <span class="ident">dist</span>: <span class="kw-2">&amp;</span><span class="ident">HuffmanTree</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// extra base length for codes 257-285</span>
         <span class="kw">static</span> <span class="ident">EXTRALENS</span>: [<span class="ident">u16</span>; <span class="number">29</span>] <span class="op">=</span> [
             <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">15</span>, <span class="number">17</span>, <span class="number">19</span>, <span class="number">23</span>, <span class="number">27</span>, <span class="number">31</span>, <span class="number">35</span>, <span class="number">43</span>, <span class="number">51</span>,
@@ -903,9 +905,9 @@
         <span class="kw">loop</span> {
             <span class="kw">let</span> <span class="ident">sym</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="ident">lens</span>.<span class="ident">decode</span>(<span class="self">self</span>));
             <span class="kw">match</span> <span class="ident">sym</span> {
-                <span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">256</span> <span class="op">=&gt;</span> { <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">push</span>(<span class="ident">sym</span> <span class="kw">as</span> <span class="ident">u8</span>); }
-                <span class="number">256</span> <span class="op">=&gt;</span> <span class="kw">break</span>,
-                <span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">290</span> <span class="op">=&gt;</span> {
+                <span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">256</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">push</span>(<span class="ident">sym</span> <span class="kw">as</span> <span class="ident">u8</span>); }
+                <span class="number">256</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">break</span>,
+                <span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">290</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="comment">// figure out len/dist that we&#39;re working with</span>
                     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">-</span> <span class="number">257</span>;
                     <span class="kw">if</span> <span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span> <span class="ident">EXTRALENS</span>.<span class="ident">len</span>() {
@@ -923,7 +925,7 @@
 
                     <span class="comment">// update the output buffer with any data we haven&#39;t pushed</span>
                     <span class="comment">// into it yet</span>
-                    <span class="kw">if</span> <span class="ident">last_updated</span> <span class="op">!=</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>() {
+                    <span class="kw">if</span> <span class="ident">last_updated</span> <span class="op">!</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>() {
                         <span class="self">self</span>.<span class="ident">update_output</span>(<span class="ident">last_updated</span>);
                         <span class="ident">last_updated</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>();
                     }
@@ -934,7 +936,7 @@
 
                     <span class="comment">// Perform the copy</span>
                     <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">reserve</span>(<span class="ident">dist</span>);
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">finger</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">outpos</span> <span class="op">&gt;=</span> <span class="ident">dist</span> {
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">finger</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">outpos</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">dist</span> {
                         <span class="self">self</span>.<span class="ident">outpos</span> <span class="op">-</span> <span class="ident">dist</span>
                     } <span class="kw">else</span> {
                         <span class="ident">HISTORY</span> <span class="op">-</span> (<span class="ident">dist</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">outpos</span>)
@@ -950,14 +952,14 @@
                         <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">push</span>(<span class="ident">b</span>);
                     }
                 }
-                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanCode</span>)
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanCode</span>)
             }
         }
         <span class="self">self</span>.<span class="ident">update_output</span>(<span class="ident">last_updated</span>);
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">fixed</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fixed</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Generated by the main function above</span>
         <span class="kw">static</span> <span class="ident">LEN</span>: <span class="ident">HuffmanTree</span> <span class="op">=</span> <span class="ident">HuffmanTree</span> {
             <span class="ident">count</span>: [<span class="number">100</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">24</span>, <span class="number">152</span>, <span class="number">112</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],
@@ -1011,11 +1013,11 @@
         <span class="self">self</span>.<span class="ident">codes</span>(<span class="kw-2">&amp;</span><span class="ident">LEN</span>, <span class="kw-2">&amp;</span><span class="ident">DIST</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">dynamic</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dynamic</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">hlit</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">5</span>)) <span class="op">+</span> <span class="number">257</span>; <span class="comment">// number of length codes</span>
         <span class="kw">let</span> <span class="ident">hdist</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">5</span>)) <span class="op">+</span> <span class="number">1</span>;  <span class="comment">// number of distance codes</span>
         <span class="kw">let</span> <span class="ident">hclen</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">4</span>)) <span class="op">+</span> <span class="number">4</span>;  <span class="comment">// number of code length codes</span>
-        <span class="kw">if</span> <span class="ident">hlit</span> <span class="op">&gt;</span> <span class="ident">MAXLCODES</span> <span class="op">||</span> <span class="ident">hdist</span> <span class="op">&gt;</span> <span class="ident">MAXDCODES</span> {
+        <span class="kw">if</span> <span class="ident">hlit</span> <span class="op">&gt;</span> <span class="ident">MAXLCODES</span> <span class="op">|</span><span class="op">|</span> <span class="ident">hdist</span> <span class="op">&gt;</span> <span class="ident">MAXDCODES</span> {
             <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">HuffmanTreeTooLarge</span>);
         }
 
@@ -1038,22 +1040,22 @@
         <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">hlit</span> <span class="op">+</span> <span class="ident">hdist</span> {
             <span class="kw">let</span> <span class="ident">symbol</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="ident">tree</span>.<span class="ident">decode</span>(<span class="self">self</span>));
             <span class="kw">match</span> <span class="ident">symbol</span> {
-                <span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">16</span> <span class="op">=&gt;</span> {
+                <span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">16</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">lengths</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="ident">symbol</span>;
-                    <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
+                    <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 }
-                <span class="number">16</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanHeaderSymbol</span>),
-                <span class="number">16</span> <span class="op">=&gt;</span> {
+                <span class="number">16</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanHeaderSymbol</span>),
+                <span class="number">16</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">lengths</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>];
                     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..(<span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">2</span>)) <span class="op">+</span> <span class="number">3</span>) {
                         <span class="ident">lengths</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="ident">prev</span>;
-                        <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
+                        <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                     }
                 }
                 <span class="comment">// all codes start out as 0, so these just skip</span>
-                <span class="number">17</span> <span class="op">=&gt;</span> { <span class="ident">i</span> <span class="op">+=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">3</span>)) <span class="op">+</span> <span class="number">3</span>; }
-                <span class="number">18</span> <span class="op">=&gt;</span> { <span class="ident">i</span> <span class="op">+=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">7</span>)) <span class="op">+</span> <span class="number">11</span>; }
-                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanHeaderSymbol</span>),
+                <span class="number">17</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">3</span>)) <span class="op">+</span> <span class="number">3</span>; }
+                <span class="number">18</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">bits</span>(<span class="number">7</span>)) <span class="op">+</span> <span class="number">11</span>; }
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanHeaderSymbol</span>),
             }
         }
         <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span> <span class="ident">hlit</span> <span class="op">+</span> <span class="ident">hdist</span> { <span class="kw">return</span> <span class="ident">error</span>(<span class="ident">Error</span>::<span class="ident">InvalidHuffmanTreeHeader</span>) }
@@ -1067,8 +1069,8 @@
     }
 
     <span class="doccomment">/// Returns whether this deflate stream has reached the EOF marker</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">eof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">eof</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">pos</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">eof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">eof</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">pos</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>()
     }
 
     <span class="doccomment">/// Resets this flate decoder. Note that this could corrupt an in-progress</span>
@@ -1083,21 +1085,21 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Read</span><span class="op">&gt;</span> <span class="ident">Read</span> <span class="kw">for</span> <span class="ident">Decoder</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">pos</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>() {
+    <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">pos</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>() {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">eof</span> { <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
             <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">block</span>());
         }
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">buf</span>.<span class="ident">len</span>(), <span class="self">self</span>.<span class="ident">block</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">pos</span>);
         <span class="kw">match</span> <span class="ident">n</span> {
-            <span class="number">0</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> {
+            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">unsafe</span> { <span class="ident">copy_nonoverlapping</span>(
                     <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">block</span>[<span class="self">self</span>.<span class="ident">pos</span>],
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>[<span class="number">0</span>],
                     <span class="ident">n</span>
                 )};
-                <span class="self">self</span>.<span class="ident">pos</span> <span class="op">+=</span> <span class="ident">n</span>;
+                <span class="self">self</span>.<span class="ident">pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">n</span>;
                 <span class="prelude-val">Ok</span>(<span class="ident">n</span>)
             }
         }
@@ -1118,7 +1120,7 @@
     <span class="comment">// The input data for these tests were all generated from the zpipe.c</span>
     <span class="comment">// program found at http://www.zlib.net/zpipe.c and the zlib format has an</span>
     <span class="comment">// extra 2 bytes of header with an 4-byte checksum at the end.</span>
-    <span class="kw">fn</span> <span class="ident">fixup</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>] {
+    <span class="kw">fn</span> <span class="ident">fixup</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>] {
         <span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">2</span>..(<span class="ident">s</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">4</span>)]
     }
 
@@ -1128,8 +1130,8 @@
         <span class="ident">d</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">output</span>.<span class="ident">len</span>(), <span class="ident">buf</span>.<span class="ident">len</span>());
-        <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">output</span>.<span class="ident">iter</span>()).<span class="ident">position</span>(<span class="op">|</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="ident">a</span> <span class="op">!=</span> <span class="ident">b</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">buf</span> <span class="op">==</span> <span class="ident">output</span>);
+        <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">output</span>.<span class="ident">iter</span>()).<span class="ident">position</span>(<span class="op">|</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="ident">b</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">buf</span> <span class="op">=</span><span class="op">=</span> <span class="ident">output</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">test_decode_pure</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">output</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
@@ -1138,8 +1140,8 @@
         <span class="ident">d</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">output</span>.<span class="ident">len</span>(), <span class="ident">buf</span>.<span class="ident">len</span>());
-        <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">output</span>.<span class="ident">iter</span>()).<span class="ident">position</span>(<span class="op">|</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="ident">a</span> <span class="op">!=</span> <span class="ident">b</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">buf</span> <span class="op">==</span> <span class="ident">output</span>);
+        <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">output</span>.<span class="ident">iter</span>()).<span class="ident">position</span>(<span class="op">|</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="ident">b</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">buf</span> <span class="op">=</span><span class="op">=</span> <span class="ident">output</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1172,13 +1174,13 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">loop</span> {
             <span class="kw">match</span> <span class="ident">d</span>.<span class="ident">read_u8</span>() {
-                <span class="prelude-val">Ok</span>(<span class="ident">b</span>) <span class="op">=&gt;</span> <span class="ident">out</span>.<span class="ident">push</span>(<span class="ident">b</span>),
-                <span class="prelude-val">Err</span>(..) <span class="op">=&gt;</span> <span class="kw">break</span>
+                <span class="prelude-val">Ok</span>(<span class="ident">b</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">out</span>.<span class="ident">push</span>(<span class="ident">b</span>),
+                <span class="prelude-val">Err</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">break</span>
             }
         }
 
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">d</span>.<span class="ident">eof</span>());
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">out</span>[..] <span class="op">==</span> <span class="kw-2">&amp;</span><span class="macro">include_bytes</span><span class="macro">!</span>(<span class="string">&quot;data/test.txt&quot;</span>)[..]);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">out</span>[..] <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="macro">include_bytes</span><span class="macro">!</span>(<span class="string">&quot;data/test.txt&quot;</span>)[..]);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1189,13 +1191,13 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">40</span>];
         <span class="kw">loop</span> {
             <span class="kw">match</span> <span class="ident">d</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>[..(<span class="number">1</span> <span class="op">+</span> <span class="ident">random</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>() <span class="op">%</span> <span class="number">40</span>)]) {
-                <span class="prelude-val">Err</span>(..) <span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>) <span class="op">=&gt;</span> <span class="kw">break</span>,
-                <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=&gt;</span> {
+                <span class="prelude-val">Err</span>(..) <span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">break</span>,
+                <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">out</span>.<span class="ident">extend</span>(<span class="ident">buf</span>[..<span class="ident">n</span>].<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">b</span>));
                 }
             }
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">out</span>[..] <span class="op">==</span> <span class="kw-2">&amp;</span><span class="macro">include_bytes</span><span class="macro">!</span>(<span class="string">&quot;data/test.txt&quot;</span>)[..]);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">out</span>[..] <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="macro">include_bytes</span><span class="macro">!</span>(<span class="string">&quot;data/test.txt&quot;</span>)[..]);
     }
 
     <span class="comment">//fn roundtrip(bytes: &amp;[u8]) {</span>
@@ -1222,7 +1224,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">Decoder</span>::<span class="ident">new</span>(<span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">fixup</span>(<span class="ident">input</span>)));
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">65536</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_size</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="ident">bh</span>.<span class="ident">iter</span>(<span class="op">||</span> {
+        <span class="ident">bh</span>.<span class="ident">iter</span>(<span class="op">|</span><span class="op">|</span> {
             <span class="ident">d</span>.<span class="ident">r</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">fixup</span>(<span class="ident">input</span>));
             <span class="ident">d</span>.<span class="ident">reset</span>();
             <span class="ident">output_size</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>).<span class="ident">unwrap</span>();

@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["compress",""],["uncompress","Uncompress 'src' into a newly allocated vector."],["uncompress_to","Uncompress 'src' directly appended to 'dst' and return the number of bytes produced. Return an error upon an invalid 'src'."],["validate_compressed_buffer",""]]});

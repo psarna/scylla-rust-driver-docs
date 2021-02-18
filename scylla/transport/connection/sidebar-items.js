@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["open_connection",""]],"struct":[["Connection",""]]});
+initSidebarItems({"fn":[["open_connection",""],["open_named_connection",""]],"struct":[["Connection",""],["ConnectionConfig",""]]});

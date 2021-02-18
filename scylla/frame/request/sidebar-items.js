@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["RequestOpcode",""]],"mod":[["execute",""],["options",""],["prepare",""],["query",""],["startup",""]],"trait":[["Request",""]]});
+initSidebarItems({"enum":[["RequestOpcode",""]],"mod":[["batch",""],["execute",""],["options",""],["prepare",""],["query",""],["startup",""]],"trait":[["Request",""]]});

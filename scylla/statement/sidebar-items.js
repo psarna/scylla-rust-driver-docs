@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["prepared_statement",""],["query",""]]});
+initSidebarItems({"mod":[["batch",""],["prepared_statement",""],["query",""]]});

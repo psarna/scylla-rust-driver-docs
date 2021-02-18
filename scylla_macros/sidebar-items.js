@@ -1,1 +1,1 @@
-initSidebarItems({"derive":[["FromRow","#[derive(FromRow)] derives FromRow for struct Works only on simple structs without generics etc"]]});
+initSidebarItems({"derive":[["FromRow","#[derive(FromRow)] derives FromRow for struct Works only on simple structs without generics etc"],["FromUserType","#[derive(FromUserType)] allows to parse a struct as User Defined Type Works only on simple structs without generics etc"],["IntoUserType","#[derive(IntoUserType)] allows to parse a struct as User Defined Type Works only on simple structs without generics etc"]]});

@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-0.3.3/src/sync/rwlock.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>rwlock.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.1.1/src/sync/rwlock.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>rwlock.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -630,32 +632,9 @@
 <span id="629">629</span>
 <span id="630">630</span>
 <span id="631">631</span>
-<span id="632">632</span>
-<span id="633">633</span>
-<span id="634">634</span>
-<span id="635">635</span>
-<span id="636">636</span>
-<span id="637">637</span>
-<span id="638">638</span>
-<span id="639">639</span>
-<span id="640">640</span>
-<span id="641">641</span>
-<span id="642">642</span>
-<span id="643">643</span>
-<span id="644">644</span>
-<span id="645">645</span>
-<span id="646">646</span>
-<span id="647">647</span>
-<span id="648">648</span>
-<span id="649">649</span>
-<span id="650">650</span>
-<span id="651">651</span>
-<span id="652">652</span>
-<span id="653">653</span>
-<span id="654">654</span>
-<span id="655">655</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sync</span>::<span class="ident">batch_semaphore</span>::<span class="ident">Semaphore</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sync</span>::<span class="ident">batch_semaphore</span>::{<span class="ident">Semaphore</span>, <span class="ident">TryAcquireError</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sync</span>::<span class="ident">mutex</span>::<span class="ident">TryLockError</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">UnsafeCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>;
@@ -785,9 +764,9 @@
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">this</span>: <span class="self">Self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">U</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">this</span>: <span class="self">Self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">U</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">U</span>,
+        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">U</span>,
     {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">this</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">U</span>;
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">s</span>;
@@ -836,13 +815,13 @@
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_map</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">this</span>: <span class="self">Self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">U</span><span class="op">&gt;</span>, <span class="self">Self</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_map</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">this</span>: <span class="self">Self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">U</span><span class="op">&gt;</span>, <span class="self">Self</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">U</span><span class="op">&gt;</span>,
+        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">U</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">this</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=&gt;</span> <span class="ident">data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">U</span>,
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">this</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">U</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">this</span>),
         };
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">s</span>;
         <span class="comment">// NB: Forget to avoid drop impl from being called.</span>
@@ -859,7 +838,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">fmt</span>::<span class="ident">Debug</span>::<span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>, <span class="ident">f</span>)
     }
 }
@@ -868,7 +847,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">fmt</span>::<span class="ident">Display</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">fmt</span>::<span class="ident">Display</span>::<span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>, <span class="ident">f</span>)
     }
 }
@@ -894,114 +873,6 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Make a new `RwLockWriteGuard` for a component of the locked data.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This operation cannot fail as the `RwLockWriteGuard` passed in already</span>
-    <span class="doccomment">/// locked the data.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an associated function that needs to be used as</span>
-    <span class="doccomment">/// `RwLockWriteGuard::map(..)`. A method would interfere with methods of</span>
-    <span class="doccomment">/// the same name on the contents of the locked data.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an asynchronous version of [`RwLockWriteGuard::map`] from the</span>
-    <span class="doccomment">/// [`parking_lot` crate].</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`RwLockWriteGuard::map`]: https://docs.rs/lock_api/latest/lock_api/struct.RwLockWriteGuard.html#method.map</span>
-    <span class="doccomment">/// [`parking_lot` crate]: https://crates.io/crates/parking_lot</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use tokio::sync::{RwLock, RwLockWriteGuard};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// #[derive(Debug, Clone, Copy, PartialEq, Eq)]</span>
-    <span class="doccomment">/// struct Foo(u32);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() {</span>
-    <span class="doccomment">/// let lock = RwLock::new(Foo(1));</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// {</span>
-    <span class="doccomment">///     let mut mapped = RwLockWriteGuard::map(lock.write().await, |f| &amp;mut f.0);</span>
-    <span class="doccomment">///     *mapped = 2;</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// assert_eq!(Foo(2), *lock.read().await);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">this</span>: <span class="self">Self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">U</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">U</span>,
-    {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">this</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">U</span>;
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">s</span>;
-        <span class="comment">// NB: Forget to avoid drop impl from being called.</span>
-        <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">this</span>);
-        <span class="ident">RwLockWriteGuard</span> {
-            <span class="ident">s</span>,
-            <span class="ident">data</span>,
-            <span class="ident">marker</span>: <span class="ident">marker</span>::<span class="ident">PhantomData</span>,
-        }
-    }
-
-    <span class="doccomment">/// Attempts to make  a new [`RwLockWriteGuard`] for a component of</span>
-    <span class="doccomment">/// the locked data. The original guard is returned if the closure returns</span>
-    <span class="doccomment">/// `None`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This operation cannot fail as the `RwLockWriteGuard` passed in already</span>
-    <span class="doccomment">/// locked the data.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an associated function that needs to be</span>
-    <span class="doccomment">/// used as `RwLockWriteGuard::try_map(...)`. A method would interfere with</span>
-    <span class="doccomment">/// methods of the same name on the contents of the locked data.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an asynchronous version of [`RwLockWriteGuard::try_map`] from</span>
-    <span class="doccomment">/// the [`parking_lot` crate].</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`RwLockWriteGuard::try_map`]: https://docs.rs/lock_api/latest/lock_api/struct.RwLockWriteGuard.html#method.try_map</span>
-    <span class="doccomment">/// [`parking_lot` crate]: https://crates.io/crates/parking_lot</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use tokio::sync::{RwLock, RwLockWriteGuard};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// #[derive(Debug, Clone, Copy, PartialEq, Eq)]</span>
-    <span class="doccomment">/// struct Foo(u32);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() {</span>
-    <span class="doccomment">/// let lock = RwLock::new(Foo(1));</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// {</span>
-    <span class="doccomment">///     let guard = lock.write().await;</span>
-    <span class="doccomment">///     let mut guard = RwLockWriteGuard::try_map(guard, |f| Some(&amp;mut f.0)).expect(&quot;should not fail&quot;);</span>
-    <span class="doccomment">///     *guard = 2;</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// assert_eq!(Foo(2), *lock.read().await);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_map</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">this</span>: <span class="self">Self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">U</span><span class="op">&gt;</span>, <span class="self">Self</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">U</span><span class="op">&gt;</span>,
-    {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">this</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=&gt;</span> <span class="ident">data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">U</span>,
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">this</span>),
-        };
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">s</span>;
-        <span class="comment">// NB: Forget to avoid drop impl from being called.</span>
-        <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">this</span>);
-        <span class="prelude-val">Ok</span>(<span class="ident">RwLockWriteGuard</span> {
-            <span class="ident">s</span>,
-            <span class="ident">data</span>,
-            <span class="ident">marker</span>: <span class="ident">marker</span>::<span class="ident">PhantomData</span>,
-        })
-    }
-
     <span class="doccomment">/// Atomically downgrades a write lock into a read lock without allowing</span>
     <span class="doccomment">/// any writers to take exclusive access of the lock in the meantime.</span>
     <span class="doccomment">///</span>
@@ -1039,7 +910,7 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`RwLock`]: struct@RwLock</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">downgrade</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">downgrade</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">RwLockWriteGuard</span> { <span class="ident">s</span>, <span class="ident">data</span>, .. } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="comment">// Release all but one of the permits held by the write guard</span>
@@ -1058,7 +929,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">fmt</span>::<span class="ident">Debug</span>::<span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>, <span class="ident">f</span>)
     }
 }
@@ -1067,7 +938,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">fmt</span>::<span class="ident">Display</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">fmt</span>::<span class="ident">Display</span>::<span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>, <span class="ident">f</span>)
     }
 }
@@ -1087,17 +958,17 @@
     <span class="comment">// This has to take a value, since the async fn&#39;s return type is unnameable.</span>
     <span class="kw">fn</span> <span class="ident">check_send_sync_val</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>(<span class="ident">_t</span>: <span class="ident">T</span>) {}
 
-    <span class="ident">check_send</span>::<span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>();
-    <span class="ident">check_sync</span>::<span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>();
-    <span class="ident">check_unpin</span>::<span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>();
+    <span class="ident">check_send</span>::<span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="ident">check_sync</span>::<span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="ident">check_unpin</span>::<span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-    <span class="ident">check_send</span>::<span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;&gt;</span>();
-    <span class="ident">check_sync</span>::<span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;&gt;</span>();
-    <span class="ident">check_unpin</span>::<span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;&gt;</span>();
+    <span class="ident">check_send</span>::<span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="ident">check_sync</span>::<span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="ident">check_unpin</span>::<span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-    <span class="ident">check_send</span>::<span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;&gt;</span>();
-    <span class="ident">check_sync</span>::<span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;&gt;</span>();
-    <span class="ident">check_unpin</span>::<span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;&gt;</span>();
+    <span class="ident">check_send</span>::<span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="ident">check_sync</span>::<span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="ident">check_unpin</span>::<span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
     <span class="kw">let</span> <span class="ident">rwlock</span> <span class="op">=</span> <span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="number">0</span>);
     <span class="ident">check_send_sync_val</span>(<span class="ident">rwlock</span>.<span class="ident">read</span>());
@@ -1131,7 +1002,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let lock = RwLock::new(5);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Sized</span>,
     {
@@ -1152,7 +1023,7 @@
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;parking_lot&quot;</span>, <span class="ident">not</span>(<span class="ident">all</span>(<span class="ident">loom</span>, <span class="ident">test</span>))))]</span>
     <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;parking_lot&quot;</span>)))]</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">const_new</span>(<span class="ident">value</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">const_new</span>(<span class="ident">value</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Sized</span>,
     {
@@ -1187,13 +1058,13 @@
     <span class="doccomment">///         // While main has an active read lock, we acquire one too.</span>
     <span class="doccomment">///         let r = c_lock.read().await;</span>
     <span class="doccomment">///         assert_eq!(*r, 1);</span>
-    <span class="doccomment">///     }).await.expect(&quot;The spawned task has paniced&quot;);</span>
+    <span class="doccomment">///     }).await.expect(&quot;The spawned task has panicked&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     // Drop the guard after the spawned task finishes.</span>
     <span class="doccomment">///     drop(n);</span>
     <span class="doccomment">///}</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">s</span>.<span class="ident">acquire</span>(<span class="number">1</span>).<span class="kw">await</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
             <span class="comment">// The semaphore was closed. but, we never explicitly close it, and we have a</span>
             <span class="comment">// handle to it through the Arc, which means that this can never happen.</span>
@@ -1204,6 +1075,52 @@
             <span class="ident">data</span>: <span class="self">self</span>.<span class="ident">c</span>.<span class="ident">get</span>(),
             <span class="ident">marker</span>: <span class="ident">marker</span>::<span class="ident">PhantomData</span>,
         }
+    }
+
+    <span class="doccomment">/// Attempts to acquire this `RwLock` with shared read access.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If the access couldn&#39;t be acquired immediately, returns [`TryLockError`].</span>
+    <span class="doccomment">/// Otherwise, an RAII guard is returned which will release read access</span>
+    <span class="doccomment">/// when dropped.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`TryLockError`]: TryLockError</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use std::sync::Arc;</span>
+    <span class="doccomment">/// use tokio::sync::RwLock;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// #[tokio::main]</span>
+    <span class="doccomment">/// async fn main() {</span>
+    <span class="doccomment">///     let lock = Arc::new(RwLock::new(1));</span>
+    <span class="doccomment">///     let c_lock = lock.clone();</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let v = lock.try_read().unwrap();</span>
+    <span class="doccomment">///     assert_eq!(*v, 1);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     tokio::spawn(async move {</span>
+    <span class="doccomment">///         // While main has an active read lock, we acquire one too.</span>
+    <span class="doccomment">///         let n = c_lock.read().await;</span>
+    <span class="doccomment">///         assert_eq!(*n, 1);</span>
+    <span class="doccomment">///     }).await.expect(&quot;The spawned task has panicked&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     // Drop the guard when spawned task finishes.</span>
+    <span class="doccomment">///     drop(v);</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">TryLockError</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">s</span>.<span class="ident">try_acquire</span>(<span class="number">1</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">permit</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">permit</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">TryAcquireError</span>::<span class="ident">NoPermits</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TryLockError</span>(())),
+            <span class="prelude-val">Err</span>(<span class="ident">TryAcquireError</span>::<span class="ident">Closed</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="ident">RwLockReadGuard</span> {
+            <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">s</span>,
+            <span class="ident">data</span>: <span class="self">self</span>.<span class="ident">c</span>.<span class="ident">get</span>(),
+            <span class="ident">marker</span>: <span class="ident">marker</span>::<span class="ident">PhantomData</span>,
+        })
     }
 
     <span class="doccomment">/// Locks this rwlock with exclusive write access, causing the current task</span>
@@ -1228,7 +1145,7 @@
     <span class="doccomment">///   *n = 2;</span>
     <span class="doccomment">///}</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">s</span>.<span class="ident">acquire</span>(<span class="ident">MAX_READS</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="kw">await</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
             <span class="comment">// The semaphore was closed. but, we never explicitly close it, and we have a</span>
             <span class="comment">// handle to it through the Arc, which means that this can never happen.</span>
@@ -1239,6 +1156,43 @@
             <span class="ident">data</span>: <span class="self">self</span>.<span class="ident">c</span>.<span class="ident">get</span>(),
             <span class="ident">marker</span>: <span class="ident">marker</span>::<span class="ident">PhantomData</span>,
         }
+    }
+
+    <span class="doccomment">/// Attempts to acquire this `RwLock` with exclusive write access.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If the access couldn&#39;t be acquired immediately, returns [`TryLockError`].</span>
+    <span class="doccomment">/// Otherwise, an RAII guard is returned which will release write access</span>
+    <span class="doccomment">/// when dropped.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`TryLockError`]: TryLockError</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use tokio::sync::RwLock;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// #[tokio::main]</span>
+    <span class="doccomment">/// async fn main() {</span>
+    <span class="doccomment">///     let rw = RwLock::new(1);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let v = rw.read().await;</span>
+    <span class="doccomment">///     assert_eq!(*v, 1);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     assert!(rw.try_write().is_err());</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">TryLockError</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">s</span>.<span class="ident">try_acquire</span>(<span class="ident">MAX_READS</span> <span class="kw">as</span> <span class="ident">u32</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">permit</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">permit</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">TryAcquireError</span>::<span class="ident">NoPermits</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TryLockError</span>(())),
+            <span class="prelude-val">Err</span>(<span class="ident">TryAcquireError</span>::<span class="ident">Closed</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="ident">RwLockWriteGuard</span> {
+            <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">s</span>,
+            <span class="ident">data</span>: <span class="self">self</span>.<span class="ident">c</span>.<span class="ident">get</span>(),
+            <span class="ident">marker</span>: <span class="ident">marker</span>::<span class="ident">PhantomData</span>,
+        })
     }
 
     <span class="doccomment">/// Returns a mutable reference to the underlying data.</span>
@@ -1258,7 +1212,7 @@
     <span class="doccomment">///     *n = 2;</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
         <span class="kw">unsafe</span> {
             <span class="comment">// Safety: This is https://github.com/rust-lang/rust/pull/76936</span>
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">c</span>.<span class="ident">get</span>()
@@ -1266,7 +1220,7 @@
     }
 
     <span class="doccomment">/// Consumes the lock, returning the underlying data.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_inner</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_inner</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Sized</span>,
     {
@@ -1277,7 +1231,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">ops</span>::<span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span>;
 
-    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
         <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">data</span> }
     }
 }
@@ -1285,19 +1239,19 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">ops</span>::<span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span>;
 
-    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
         <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">data</span> }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">ops</span>::<span class="ident">DerefMut</span> <span class="kw">for</span> <span class="ident">RwLockWriteGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">deref_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">deref_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
         <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">data</span> }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">s</span>)
     }
 }
@@ -1306,7 +1260,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Default</span>,
 {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">T</span>::<span class="ident">default</span>())
     }
 }

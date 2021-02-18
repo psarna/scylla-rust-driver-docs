@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `scylla/src/frame/response/result.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>result.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../scylla/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `scylla/src/frame/response/result.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>result.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../scylla/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -420,17 +422,173 @@
 <span id="419">419</span>
 <span id="420">420</span>
 <span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cql_to_rust</span>::{<span class="ident">FromRow</span>, <span class="ident">FromRowError</span>};
-<span class="kw">use</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">AResult</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::{<span class="ident">frame_errors</span>::<span class="ident">ParseError</span>, <span class="ident">types</span>};
 <span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">BigEndian</span>, <span class="ident">ReadBytesExt</span>};
 <span class="kw">use</span> <span class="ident">bytes</span>::{<span class="ident">Buf</span>, <span class="ident">Bytes</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::<span class="ident">IpAddr</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">StdResult</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>;
-
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">types</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{
+    <span class="ident">collections</span>::<span class="ident">BTreeMap</span>,
+    <span class="ident">convert</span>::{<span class="ident">TryFrom</span>, <span class="ident">TryInto</span>},
+    <span class="ident">net</span>::<span class="ident">IpAddr</span>,
+    <span class="ident">result</span>::<span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">StdResult</span>,
+    <span class="ident">str</span>,
+};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetKeyspace</span> {
@@ -462,76 +620,105 @@
     <span class="ident">BigInt</span>,
     <span class="ident">Text</span>,
     <span class="ident">Inet</span>,
+    <span class="ident">List</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ColumnType</span><span class="op">&gt;</span>),
+    <span class="ident">Map</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ColumnType</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ColumnType</span><span class="op">&gt;</span>),
     <span class="ident">Set</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ColumnType</span><span class="op">&gt;</span>),
-    <span class="comment">// TODO</span>
+    <span class="ident">UserDefinedType</span> {
+        <span class="ident">type_name</span>: <span class="ident">String</span>,
+        <span class="ident">keyspace</span>: <span class="ident">String</span>,
+        <span class="ident">field_types</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">ColumnType</span>)<span class="op">&gt;</span>,
+    },
+    <span class="ident">Tuple</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ColumnType</span><span class="op">&gt;</span>),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CQLValue</span> {
     <span class="ident">Ascii</span>(<span class="ident">String</span>),
     <span class="ident">Int</span>(<span class="ident">i32</span>),
     <span class="ident">BigInt</span>(<span class="ident">i64</span>),
     <span class="ident">Text</span>(<span class="ident">String</span>),
     <span class="ident">Inet</span>(<span class="ident">IpAddr</span>),
+    <span class="ident">List</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span>),
+    <span class="ident">Map</span>(<span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">CQLValue</span>, <span class="ident">CQLValue</span>)<span class="op">&gt;</span>),
     <span class="ident">Set</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span>),
-    <span class="comment">// TODO</span>
+    <span class="ident">UserDefinedType</span> {
+        <span class="ident">keyspace</span>: <span class="ident">String</span>,
+        <span class="ident">type_name</span>: <span class="ident">String</span>,
+        <span class="ident">fields</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    },
+    <span class="ident">Tuple</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">CQLValue</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ascii</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ascii</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Ascii</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">Ascii</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_int</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_int</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Int</span>(<span class="ident">i</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">i</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">Int</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">i</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_bigint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_bigint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">BigInt</span>(<span class="ident">i</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">i</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">BigInt</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">i</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Text</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">Text</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_string</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_string</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Ascii</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
-            <span class="self">Self</span>::<span class="ident">Text</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">Ascii</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
+            <span class="self">Self</span>::<span class="ident">Text</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_inet</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_inet</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Inet</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">a</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">Inet</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">a</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_list</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Set</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">List</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_vec</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">Set</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="self">Self</span>::<span class="ident">Set</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_vec</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="self">Self</span>::<span class="ident">List</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
+            <span class="self">Self</span>::<span class="ident">Set</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_pair_vec</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">CQLValue</span>, <span class="ident">CQLValue</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="self">Self</span>::<span class="ident">Map</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
@@ -561,12 +748,12 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Row</span> {
-    <span class="kw">pub</span> <span class="ident">columns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">columns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Row</span> {
     <span class="doccomment">/// Allows converting Row into tuple of rust types or custom struct deriving FromRow</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_typed</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">RowT</span>, <span class="ident">FromRowError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_typed</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">RowT</span>, <span class="ident">FromRowError</span><span class="op">&gt;</span> {
         <span class="ident">RowT</span>::<span class="ident">from_row</span>(<span class="self">self</span>)
     }
 }
@@ -587,7 +774,7 @@
     <span class="ident">SchemaChange</span>(<span class="ident">SchemaChange</span>),
 }
 
-<span class="kw">fn</span> <span class="ident">deser_table_spec</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">TableSpec</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_table_spec</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">TableSpec</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">ks_name</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_string</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>();
     <span class="kw">let</span> <span class="ident">table_name</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_string</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>();
     <span class="prelude-val">Ok</span>(<span class="ident">TableSpec</span> {
@@ -596,19 +783,49 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">deser_type</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">ColumnType</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_type</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">ColumnType</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">ColumnType</span>::<span class="kw-2">*</span>;
     <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_short</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">id</span> {
-        <span class="number">0x0001</span> <span class="op">=&gt;</span> <span class="ident">Ascii</span>,
-        <span class="number">0x0002</span> <span class="op">=&gt;</span> <span class="ident">BigInt</span>,
-        <span class="number">0x0009</span> <span class="op">=&gt;</span> <span class="ident">Int</span>,
-        <span class="number">0x000D</span> <span class="op">=&gt;</span> <span class="ident">Text</span>,
-        <span class="number">0x0010</span> <span class="op">=&gt;</span> <span class="ident">Inet</span>,
-        <span class="number">0x0022</span> <span class="op">=&gt;</span> <span class="ident">Set</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>)),
-        <span class="ident">id</span> <span class="op">=&gt;</span> {
+        <span class="number">0x0001</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ascii</span>,
+        <span class="number">0x0002</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">BigInt</span>,
+        <span class="number">0x0009</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Int</span>,
+        <span class="number">0x000D</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Text</span>,
+        <span class="number">0x0010</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inet</span>,
+        <span class="number">0x0020</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">List</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>)),
+        <span class="number">0x0021</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Map</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>)),
+        <span class="number">0x0022</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Set</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>)),
+        <span class="number">0x0030</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">keyspace_name</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_string</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_string</span>();
+            <span class="kw">let</span> <span class="ident">type_name</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_string</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_string</span>();
+            <span class="kw">let</span> <span class="ident">fields_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_short</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">field_types</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">ColumnType</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">fields_size</span>);
+
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">fields_size</span> {
+                <span class="kw">let</span> <span class="ident">field_name</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_string</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_string</span>();
+                <span class="kw">let</span> <span class="ident">field_type</span>: <span class="ident">ColumnType</span> <span class="op">=</span> <span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
+
+                <span class="ident">field_types</span>.<span class="ident">push</span>((<span class="ident">field_name</span>, <span class="ident">field_type</span>));
+            }
+
+            <span class="ident">UserDefinedType</span> {
+                <span class="ident">type_name</span>,
+                <span class="ident">keyspace</span>: <span class="ident">keyspace_name</span>,
+                <span class="ident">field_types</span>,
+            }
+        }
+        <span class="number">0x0031</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">len</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_short</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">types</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>);
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">len</span> {
+                <span class="ident">types</span>.<span class="ident">push</span>(<span class="ident">deser_type</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>);
+            }
+            <span class="ident">Tuple</span>(<span class="ident">types</span>)
+        }
+        <span class="ident">id</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="comment">// TODO implement other types</span>
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Type not yet implemented, id: {}&quot;</span>, <span class="ident">id</span>));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ParseError</span>::<span class="ident">TypeNotImplemented</span>(<span class="ident">id</span>));
         }
     })
 }
@@ -617,7 +834,7 @@
     <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
     <span class="ident">global_table_spec</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TableSpec</span><span class="op">&gt;</span>,
     <span class="ident">col_count</span>: <span class="ident">usize</span>,
-) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ColumnSpec</span><span class="op">&gt;&gt;</span> {
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ColumnSpec</span><span class="op">&gt;</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">col_specs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">col_count</span>);
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">col_count</span> {
         <span class="kw">let</span> <span class="ident">table_spec</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">spec</span>) <span class="op">=</span> <span class="ident">global_table_spec</span> {
@@ -636,17 +853,13 @@
     <span class="prelude-val">Ok</span>(<span class="ident">col_specs</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">deser_result_metadata</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">ResultMetadata</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_result_metadata</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">ResultMetadata</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">global_tables_spec</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0001</span> <span class="op">!=</span> <span class="number">0</span>;
-    <span class="kw">let</span> <span class="ident">has_more_pages</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0002</span> <span class="op">!=</span> <span class="number">0</span>;
-    <span class="kw">let</span> <span class="ident">no_metadata</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0004</span> <span class="op">!=</span> <span class="number">0</span>;
+    <span class="kw">let</span> <span class="ident">global_tables_spec</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0001</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>;
+    <span class="kw">let</span> <span class="ident">has_more_pages</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0002</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>;
+    <span class="kw">let</span> <span class="ident">no_metadata</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0004</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>;
 
-    <span class="kw">let</span> <span class="ident">col_count</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-    <span class="kw">if</span> <span class="ident">col_count</span> <span class="op">&lt;</span> <span class="number">0</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Invalid negative column count: {}&quot;</span>, <span class="ident">col_count</span>));
-    }
-    <span class="kw">let</span> <span class="ident">col_count</span> <span class="op">=</span> <span class="ident">col_count</span> <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="kw">let</span> <span class="ident">col_count</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">paging_state</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">has_more_pages</span> {
         <span class="prelude-val">Some</span>(<span class="ident">types</span>::<span class="ident">read_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>().<span class="ident">into</span>())
@@ -677,21 +890,13 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">deser_prepared_metadata</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">PreparedMetadata</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_prepared_metadata</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">PreparedMetadata</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">global_tables_spec</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0001</span> <span class="op">!=</span> <span class="number">0</span>;
+    <span class="kw">let</span> <span class="ident">global_tables_spec</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">&amp;</span> <span class="number">0x0001</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>;
 
-    <span class="kw">let</span> <span class="ident">col_count</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-    <span class="kw">if</span> <span class="ident">col_count</span> <span class="op">&lt;</span> <span class="number">0</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Invalid negative column count: {}&quot;</span>, <span class="ident">col_count</span>));
-    }
-    <span class="kw">let</span> <span class="ident">col_count</span> <span class="op">=</span> <span class="ident">col_count</span> <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="kw">let</span> <span class="ident">col_count</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int_length</span>(<span class="ident">buf</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">usize</span>;
 
-    <span class="kw">let</span> <span class="ident">pk_count</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-    <span class="kw">if</span> <span class="ident">pk_count</span> <span class="op">&lt;</span> <span class="number">0</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Invalid negative pk count: {}&quot;</span>, <span class="ident">col_count</span>));
-    }
-    <span class="kw">let</span> <span class="ident">pk_count</span> <span class="op">=</span> <span class="ident">pk_count</span> <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="kw">let</span> <span class="ident">pk_count</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pk_indexes</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">pk_count</span>);
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">pk_count</span> {
@@ -713,82 +918,126 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">deser_cql_value</span>(<span class="ident">typ</span>: <span class="kw-2">&amp;</span><span class="ident">ColumnType</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_cql_value</span>(<span class="ident">typ</span>: <span class="kw-2">&amp;</span><span class="ident">ColumnType</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">CQLValue</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">ColumnType</span>::<span class="kw-2">*</span>;
     <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">typ</span> {
-        <span class="ident">Ascii</span> <span class="op">=&gt;</span> {
+        <span class="ident">Ascii</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">if</span> <span class="op">!</span><span class="ident">buf</span>.<span class="ident">is_ascii</span>() {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Not an ascii string: {:?}&quot;</span>, <span class="ident">buf</span>));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ParseError</span>::<span class="ident">BadData</span>(<span class="string">&quot;String is not ascii!&quot;</span>.<span class="ident">to_string</span>()));
             }
             <span class="ident">CQLValue</span>::<span class="ident">Ascii</span>(<span class="ident">str</span>::<span class="ident">from_utf8</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>())
         }
-        <span class="ident">Int</span> <span class="op">=&gt;</span> {
-            <span class="kw">if</span> <span class="ident">buf</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="number">4</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(
-                    <span class="string">&quot;Expected buffer length of 4 bytes, got: {}&quot;</span>,
+        <span class="ident">Int</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">if</span> <span class="ident">buf</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">4</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ParseError</span>::<span class="ident">BadData</span>(<span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;Buffer length should be 4 not {}&quot;</span>,
                     <span class="ident">buf</span>.<span class="ident">len</span>()
-                ));
+                )));
             }
             <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="ident">buf</span>.<span class="ident">read_i32</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)
         }
-        <span class="ident">BigInt</span> <span class="op">=&gt;</span> {
-            <span class="kw">if</span> <span class="ident">buf</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="number">8</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(
-                    <span class="string">&quot;Expected buffer length of 8 bytes, got: {}&quot;</span>,
+        <span class="ident">BigInt</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">if</span> <span class="ident">buf</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">8</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ParseError</span>::<span class="ident">BadData</span>(<span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;Buffer length should be 8 not {}&quot;</span>,
                     <span class="ident">buf</span>.<span class="ident">len</span>()
-                ));
+                )));
             }
             <span class="ident">CQLValue</span>::<span class="ident">BigInt</span>(<span class="ident">buf</span>.<span class="ident">read_i64</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)
         }
-        <span class="ident">Text</span> <span class="op">=&gt;</span> <span class="ident">CQLValue</span>::<span class="ident">Text</span>(<span class="ident">str</span>::<span class="ident">from_utf8</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>()),
-        <span class="ident">Inet</span> <span class="op">=&gt;</span> <span class="ident">CQLValue</span>::<span class="ident">Inet</span>(<span class="kw">match</span> <span class="ident">buf</span>.<span class="ident">len</span>() {
-            <span class="number">4</span> <span class="op">=&gt;</span> {
+        <span class="ident">Text</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CQLValue</span>::<span class="ident">Text</span>(<span class="ident">str</span>::<span class="ident">from_utf8</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>()),
+        <span class="ident">Inet</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CQLValue</span>::<span class="ident">Inet</span>(<span class="kw">match</span> <span class="ident">buf</span>.<span class="ident">len</span>() {
+            <span class="number">4</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">IpAddr</span>::<span class="ident">from</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">4</span>]<span class="op">&gt;</span>::<span class="ident">try_from</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>[<span class="number">0</span>..<span class="number">4</span>])<span class="question-mark">?</span>);
                 <span class="ident">buf</span>.<span class="ident">advance</span>(<span class="number">4</span>);
                 <span class="ident">ret</span>
             }
-            <span class="number">16</span> <span class="op">=&gt;</span> {
+            <span class="number">16</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">IpAddr</span>::<span class="ident">from</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">16</span>]<span class="op">&gt;</span>::<span class="ident">try_from</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>[<span class="number">0</span>..<span class="number">16</span>])<span class="question-mark">?</span>);
                 <span class="ident">buf</span>.<span class="ident">advance</span>(<span class="number">16</span>);
                 <span class="ident">ret</span>
             }
-            <span class="ident">v</span> <span class="op">=&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(
-                    <span class="string">&quot;Invalid number of bytes for inet value: {}. Expecting 4 or 16&quot;</span>,
+            <span class="ident">v</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ParseError</span>::<span class="ident">BadData</span>(<span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;Invalid inet bytes length: {}&quot;</span>,
                     <span class="ident">v</span>
-                ));
+                )));
             }
         }),
-        <span class="ident">Set</span>(<span class="ident">typ</span>) <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-            <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Invalid number of set elements: {}&quot;</span>, <span class="ident">len</span>));
+        <span class="ident">List</span>(<span class="ident">type_name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">len</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">len</span>);
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">len</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
+                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">deser_cql_value</span>(<span class="ident">type_name</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>)<span class="question-mark">?</span>);
             }
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>);
+            <span class="ident">CQLValue</span>::<span class="ident">List</span>(<span class="ident">res</span>)
+        }
+        <span class="ident">Map</span>(<span class="ident">key_type</span>, <span class="ident">value_type</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">len</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">len</span>);
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">len</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">deser_cql_value</span>(<span class="ident">key_type</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>)<span class="question-mark">?</span>;
+                <span class="ident">b</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">deser_cql_value</span>(<span class="ident">value_type</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>)<span class="question-mark">?</span>;
+                <span class="ident">res</span>.<span class="ident">push</span>((<span class="ident">key</span>, <span class="ident">val</span>));
+            }
+            <span class="ident">CQLValue</span>::<span class="ident">Map</span>(<span class="ident">res</span>)
+        }
+        <span class="ident">Set</span>(<span class="ident">type_name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">len</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">len</span>);
             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">len</span> {
                 <span class="comment">// TODO: is `null` allowed as set element? Should we use read_bytes_opt?</span>
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">deser_cql_value</span>(<span class="ident">typ</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>)<span class="question-mark">?</span>);
+                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">deser_cql_value</span>(<span class="ident">type_name</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>)<span class="question-mark">?</span>);
             }
             <span class="ident">CQLValue</span>::<span class="ident">Set</span>(<span class="ident">res</span>)
+        }
+        <span class="ident">UserDefinedType</span> {
+            <span class="ident">type_name</span>,
+            <span class="ident">keyspace</span>,
+            <span class="ident">field_types</span>,
+        } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fields</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BTreeMap</span>::<span class="ident">new</span>();
+
+            <span class="kw">for</span> (<span class="ident">field_name</span>, <span class="ident">field_type</span>) <span class="kw">in</span> <span class="ident">field_types</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">field_value</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">field_val_bytes</span>) <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_bytes_opt</span>(<span class="ident">buf</span>)<span class="question-mark">?</span> {
+                    <span class="ident">field_value</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">deser_cql_value</span>(<span class="kw-2">&amp;</span><span class="ident">field_type</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">field_val_bytes</span>)<span class="question-mark">?</span>);
+                }
+
+                <span class="ident">fields</span>.<span class="ident">insert</span>(<span class="ident">field_name</span>.<span class="ident">clone</span>(), <span class="ident">field_value</span>);
+            }
+
+            <span class="ident">CQLValue</span>::<span class="ident">UserDefinedType</span> {
+                <span class="ident">keyspace</span>: <span class="ident">keyspace</span>.<span class="ident">clone</span>(),
+                <span class="ident">type_name</span>: <span class="ident">type_name</span>.<span class="ident">clone</span>(),
+                <span class="ident">fields</span>,
+            }
+        }
+        <span class="ident">Tuple</span>(<span class="ident">type_names</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">type_names</span>.<span class="ident">len</span>());
+            <span class="kw">for</span> <span class="ident">type_name</span> <span class="kw">in</span> <span class="ident">type_names</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
+                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">deser_cql_value</span>(<span class="ident">type_name</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>)<span class="question-mark">?</span>);
+            }
+            <span class="ident">CQLValue</span>::<span class="ident">Tuple</span>(<span class="ident">res</span>)
         }
     })
 }
 
-<span class="kw">fn</span> <span class="ident">deser_rows</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">Rows</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_rows</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">Rows</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">deser_result_metadata</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
 
     <span class="comment">// TODO: the protocol allows an optimization (which must be explicitly requested on query by</span>
     <span class="comment">// the driver) where the column metadata is not sent with the result.</span>
     <span class="comment">// Implement this optimization. We&#39;ll then need to take the column types by a parameter.</span>
     <span class="comment">// Beware of races; our column types may be outdated.</span>
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">metadata</span>.<span class="ident">col_count</span> <span class="op">==</span> <span class="ident">metadata</span>.<span class="ident">col_specs</span>.<span class="ident">len</span>());
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">metadata</span>.<span class="ident">col_count</span> <span class="op">=</span><span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">col_specs</span>.<span class="ident">len</span>());
 
-    <span class="kw">let</span> <span class="ident">rows_count</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
-    <span class="kw">if</span> <span class="ident">rows_count</span> <span class="op">&lt;</span> <span class="number">0</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Invalid negative number of rows: {}&quot;</span>, <span class="ident">rows_count</span>));
-    }
-    <span class="kw">let</span> <span class="ident">rows_count</span> <span class="op">=</span> <span class="ident">rows_count</span> <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="kw">let</span> <span class="ident">rows_count</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">rows_count</span>);
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">rows_count</span> {
@@ -810,11 +1059,12 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">deser_set_keyspace</span>(<span class="ident">_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">SetKeyspace</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">unnecessary_wraps</span>)]</span>
+<span class="kw">fn</span> <span class="ident">deser_set_keyspace</span>(<span class="ident">_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">SetKeyspace</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="prelude-val">Ok</span>(<span class="ident">SetKeyspace</span> {}) <span class="comment">// TODO</span>
 }
 
-<span class="kw">fn</span> <span class="ident">deser_prepared</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">Prepared</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">deser_prepared</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">Prepared</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">id_len</span> <span class="op">=</span> <span class="ident">types</span>::<span class="ident">read_short</span>(<span class="ident">buf</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">usize</span>;
     <span class="kw">let</span> <span class="ident">id</span>: <span class="ident">Bytes</span> <span class="op">=</span> <span class="ident">buf</span>[<span class="number">0</span>..<span class="ident">id_len</span>].<span class="ident">to_owned</span>().<span class="ident">into</span>();
     <span class="ident">buf</span>.<span class="ident">advance</span>(<span class="ident">id_len</span>);
@@ -827,20 +1077,82 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">deser_schema_change</span>(<span class="ident">_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="ident">SchemaChange</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">unnecessary_wraps</span>)]</span>
+<span class="kw">fn</span> <span class="ident">deser_schema_change</span>(<span class="ident">_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="ident">SchemaChange</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="prelude-val">Ok</span>(<span class="ident">SchemaChange</span> {}) <span class="comment">// TODO</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">deserialize</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">AResult</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">deserialize</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StdResult</span><span class="op">&lt;</span><span class="prelude-ty">Result</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="self">self</span>::<span class="prelude-ty">Result</span>::<span class="kw-2">*</span>;
     <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">types</span>::<span class="ident">read_int</span>(<span class="ident">buf</span>)<span class="question-mark">?</span> {
-        <span class="number">0x0001</span> <span class="op">=&gt;</span> <span class="ident">Void</span>,
-        <span class="number">0x0002</span> <span class="op">=&gt;</span> <span class="ident">Rows</span>(<span class="ident">deser_rows</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
-        <span class="number">0x0003</span> <span class="op">=&gt;</span> <span class="ident">SetKeyspace</span>(<span class="ident">deser_set_keyspace</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
-        <span class="number">0x0004</span> <span class="op">=&gt;</span> <span class="ident">Prepared</span>(<span class="ident">deser_prepared</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
-        <span class="number">0x0005</span> <span class="op">=&gt;</span> <span class="ident">SchemaChange</span>(<span class="ident">deser_schema_change</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
-        <span class="ident">k</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Unknown query result kind: {}&quot;</span>, <span class="ident">k</span>)),
+        <span class="number">0x0001</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Void</span>,
+        <span class="number">0x0002</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Rows</span>(<span class="ident">deser_rows</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
+        <span class="number">0x0003</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SetKeyspace</span>(<span class="ident">deser_set_keyspace</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
+        <span class="number">0x0004</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Prepared</span>(<span class="ident">deser_prepared</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
+        <span class="number">0x0005</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SchemaChange</span>(<span class="ident">deser_schema_change</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>),
+        <span class="ident">k</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ParseError</span>::<span class="ident">BadData</span>(<span class="macro">format</span><span class="macro">!</span>(
+                <span class="string">&quot;Unknown query result id: {}&quot;</span>,
+                <span class="ident">k</span>
+            )))
+        }
     })
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span> <span class="kw">as</span> <span class="ident">scylla</span>;
+    <span class="kw">use</span> <span class="ident">scylla</span>::<span class="ident">frame</span>::<span class="ident">response</span>::<span class="ident">result</span>::<span class="ident">CQLValue</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_list_from_cql</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">my_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+
+        <span class="ident">my_vec</span>.<span class="ident">push</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">20</span>));
+        <span class="ident">my_vec</span>.<span class="ident">push</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">2</span>));
+        <span class="ident">my_vec</span>.<span class="ident">push</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">13</span>));
+
+        <span class="kw">let</span> <span class="ident">cql</span>: <span class="ident">CQLValue</span> <span class="op">=</span> <span class="ident">CQLValue</span>::<span class="ident">List</span>(<span class="ident">my_vec</span>);
+        <span class="kw">let</span> <span class="ident">decoded</span> <span class="op">=</span> <span class="ident">cql</span>.<span class="ident">into_vec</span>().<span class="ident">unwrap</span>();
+
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">decoded</span>[<span class="number">0</span>], <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">20</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">decoded</span>[<span class="number">1</span>], <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">2</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">decoded</span>[<span class="number">2</span>], <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">13</span>));
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_set_from_cql</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">my_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CQLValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+
+        <span class="ident">my_vec</span>.<span class="ident">push</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">20</span>));
+        <span class="ident">my_vec</span>.<span class="ident">push</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">2</span>));
+        <span class="ident">my_vec</span>.<span class="ident">push</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">13</span>));
+
+        <span class="kw">let</span> <span class="ident">cql</span>: <span class="ident">CQLValue</span> <span class="op">=</span> <span class="ident">CQLValue</span>::<span class="ident">Set</span>(<span class="ident">my_vec</span>);
+        <span class="kw">let</span> <span class="ident">decoded</span> <span class="op">=</span> <span class="ident">cql</span>.<span class="ident">as_set</span>().<span class="ident">unwrap</span>();
+
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">decoded</span>[<span class="number">0</span>], <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">20</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">decoded</span>[<span class="number">1</span>], <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">2</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">decoded</span>[<span class="number">2</span>], <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">13</span>));
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_map_from_cql</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">my_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">CQLValue</span>, <span class="ident">CQLValue</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+
+        <span class="ident">my_vec</span>.<span class="ident">push</span>((<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">20</span>), <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">21</span>)));
+        <span class="ident">my_vec</span>.<span class="ident">push</span>((<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">2</span>), <span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">3</span>)));
+
+        <span class="kw">let</span> <span class="ident">cql</span>: <span class="ident">CQLValue</span> <span class="op">=</span> <span class="ident">CQLValue</span>::<span class="ident">Map</span>(<span class="ident">my_vec</span>);
+
+        <span class="kw">let</span> <span class="ident">decoded</span> <span class="op">=</span> <span class="ident">cql</span>.<span class="ident">into_pair_vec</span>().<span class="ident">unwrap</span>();
+
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">20</span>), <span class="ident">decoded</span>[<span class="number">0</span>].<span class="number">0</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">21</span>), <span class="ident">decoded</span>[<span class="number">0</span>].<span class="number">1</span>);
+
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">2</span>), <span class="ident">decoded</span>[<span class="number">1</span>].<span class="number">0</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">CQLValue</span>::<span class="ident">Int</span>(<span class="number">3</span>), <span class="ident">decoded</span>[<span class="number">1</span>].<span class="number">1</span>);
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "scylla";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

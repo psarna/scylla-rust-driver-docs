@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["hash3_x64_128",""],["murmur3_token",""]],"struct":[["Node",""],["Ring",""],["ShardInfo",""],["Token",""]],"type":[["Shard",""]]});
+initSidebarItems({"enum":[["ShardingError",""]],"fn":[["hash3_x64_128",""],["murmur3_token",""]],"struct":[["Node",""],["ShardInfo",""],["Token",""]],"type":[["Shard",""]]});

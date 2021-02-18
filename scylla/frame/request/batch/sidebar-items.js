@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["BatchStatement",""],["BatchType","The type of a batch."]],"struct":[["Batch",""]]});

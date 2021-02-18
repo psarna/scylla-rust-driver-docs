@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Session",""],["TypedRowIter",""]],"trait":[["IntoTypedRows",""]]});
+initSidebarItems({"enum":[["KnownNode","Describes database server known on Session startup."]],"struct":[["Session",""],["SessionConfig","Configuration options for [`Session`]. Can be created manually, but usually it's easier to use SessionBuilder"],["TypedRowIter",""]],"trait":[["IntoTypedRows",""]]});

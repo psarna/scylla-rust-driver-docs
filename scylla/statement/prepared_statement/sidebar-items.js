@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["PreparedStatement","Represents a statement prepared on the server."]]});
+initSidebarItems({"enum":[["PartitionKeyError",""]],"struct":[["PreparedStatement","Represents a statement prepared on the server."]]});

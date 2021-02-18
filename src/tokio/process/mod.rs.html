@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-0.3.3/src/process/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.1.1/src/process/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1260,6 +1262,31 @@
 <span id="1259">1259</span>
 <span id="1260">1260</span>
 <span id="1261">1261</span>
+<span id="1262">1262</span>
+<span id="1263">1263</span>
+<span id="1264">1264</span>
+<span id="1265">1265</span>
+<span id="1266">1266</span>
+<span id="1267">1267</span>
+<span id="1268">1268</span>
+<span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! An implementation of asynchronous process management for Tokio.</span>
 <span class="doccomment">//!</span>
@@ -1475,7 +1502,7 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [rust-lang/rust#37519]: https://github.com/rust-lang/rust/issues/37519</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;&gt;</span>(<span class="ident">program</span>: <span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">program</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Command</span> {
         <span class="self">Self</span>::<span class="ident">from</span>(<span class="ident">StdCommand</span>::<span class="ident">new</span>(<span class="ident">program</span>))
     }
 
@@ -1511,7 +1538,7 @@
     <span class="doccomment">///         .arg(&quot;-l&quot;)</span>
     <span class="doccomment">///         .arg(&quot;-a&quot;);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">arg</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">arg</span>: <span class="ident">S</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">arg</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">arg</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">arg</span>(<span class="ident">arg</span>);
         <span class="self">self</span>
     }
@@ -1532,7 +1559,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .args(&amp;[&quot;-l&quot;, &quot;-a&quot;]);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">args</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">args</span>: <span class="ident">I</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">args</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">args</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
     <span class="kw">where</span>
         <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">S</span><span class="op">&gt;</span>,
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span>,
@@ -1556,7 +1583,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .env(&quot;PATH&quot;, &quot;/bin&quot;);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">env</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">env</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
     <span class="kw">where</span>
         <span class="ident">K</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span>,
         <span class="ident">V</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span>,
@@ -1588,7 +1615,7 @@
     <span class="doccomment">///         .env_clear()</span>
     <span class="doccomment">///         .envs(&amp;filtered_env);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">envs</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vars</span>: <span class="ident">I</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">envs</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vars</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
     <span class="kw">where</span>
         <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">K</span>, <span class="ident">V</span>)<span class="op">&gt;</span>,
         <span class="ident">K</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span>,
@@ -1610,7 +1637,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .env_remove(&quot;PATH&quot;);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">env_remove</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">env_remove</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">OsStr</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">env_remove</span>(<span class="ident">key</span>);
         <span class="self">self</span>
     }
@@ -1627,7 +1654,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .env_clear();</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">env_clear</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">env_clear</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">env_clear</span>();
         <span class="self">self</span>
     }
@@ -1654,7 +1681,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .current_dir(&quot;/bin&quot;);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current_dir</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">dir</span>: <span class="ident">P</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current_dir</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">dir</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">current_dir</span>(<span class="ident">dir</span>);
         <span class="self">self</span>
     }
@@ -1678,7 +1705,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .stdin(Stdio::null());</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stdin</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Stdio</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stdin</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Stdio</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">stdin</span>(<span class="ident">cfg</span>);
         <span class="self">self</span>
     }
@@ -1702,7 +1729,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .stdout(Stdio::null());</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stdout</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Stdio</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stdout</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Stdio</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">stdout</span>(<span class="ident">cfg</span>);
         <span class="self">self</span>
     }
@@ -1726,7 +1753,7 @@
     <span class="doccomment">/// let command = Command::new(&quot;ls&quot;)</span>
     <span class="doccomment">///         .stderr(Stdio::null());</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stderr</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Stdio</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stderr</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Stdio</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">stderr</span>(<span class="ident">cfg</span>);
         <span class="self">self</span>
     }
@@ -1757,7 +1784,7 @@
     <span class="doccomment">/// If stronger guarantees are required, it is recommended to avoid dropping</span>
     <span class="doccomment">/// a [`Child`] handle where possible, and instead utilize `child.wait().await`</span>
     <span class="doccomment">/// or `child.kill().await` where possible.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kill_on_drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kill_on_drop</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kill_on_drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kill_on_drop</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">kill_on_drop</span> <span class="op">=</span> <span class="ident">kill_on_drop</span>;
         <span class="self">self</span>
     }
@@ -1768,7 +1795,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [1]: https://msdn.microsoft.com/en-us/library/windows/desktop/ms684863(v=vs.85).aspx</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">creation_flags</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">creation_flags</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">creation_flags</span>(<span class="ident">flags</span>);
         <span class="self">self</span>
     }
@@ -1777,7 +1804,7 @@
     <span class="doccomment">/// `setuid` call in the child process. Failure in the `setuid`</span>
     <span class="doccomment">/// call will cause the spawn to fail.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">uid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">uid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">uid</span>(<span class="ident">id</span>);
         <span class="self">self</span>
     }
@@ -1785,7 +1812,7 @@
     <span class="doccomment">/// Similar to `uid` but sets the group ID of the child process. This has</span>
     <span class="doccomment">/// the same semantics as the `uid` field.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">gid</span>(<span class="ident">id</span>);
         <span class="self">self</span>
     }
@@ -1820,9 +1847,9 @@
     <span class="doccomment">/// working directory have successfully been changed, so output to these</span>
     <span class="doccomment">/// locations may not appear where intended.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">pre_exec</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">pre_exec</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Command</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">pre_exec</span>(<span class="ident">f</span>);
         <span class="self">self</span>
@@ -1895,7 +1922,7 @@
     <span class="doccomment">/// On Unix platforms this method will fail with `std::io::ErrorKind::WouldBlock`</span>
     <span class="doccomment">/// if the system process limit is reached (which includes other applications</span>
     <span class="doccomment">/// running on the system).</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Child</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Child</span><span class="op">&gt;</span> {
         <span class="ident">imp</span>::<span class="ident">spawn_child</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">std</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">spawned_child</span><span class="op">|</span> <span class="ident">Child</span> {
             <span class="ident">child</span>: <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">ChildDropGuard</span> {
                 <span class="ident">inner</span>: <span class="ident">spawned_child</span>.<span class="ident">child</span>,
@@ -1945,7 +1972,7 @@
     <span class="doccomment">///         .expect(&quot;ls command failed to run&quot;)</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ExitStatus</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ExitStatus</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">child</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">spawn</span>();
 
         <span class="kw">async</span> {
@@ -2008,7 +2035,7 @@
     <span class="doccomment">///     println!(&quot;stderr of ls: {:?}&quot;, output.stderr);</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Output</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Output</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">stdout</span>(<span class="ident">Stdio</span>::<span class="ident">piped</span>());
         <span class="self">self</span>.<span class="ident">std</span>.<span class="ident">stderr</span>(<span class="ident">Stdio</span>::<span class="ident">piped</span>());
 
@@ -2019,7 +2046,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StdCommand</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Command</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">std</span>: <span class="ident">StdCommand</span>) <span class="op">-&gt;</span> <span class="ident">Command</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">std</span>: <span class="ident">StdCommand</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Command</span> {
         <span class="ident">Command</span> {
             <span class="ident">std</span>,
             <span class="ident">kill_on_drop</span>: <span class="bool-val">false</span>,
@@ -2035,7 +2062,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Kill</span><span class="op">&gt;</span> <span class="ident">Kill</span> <span class="kw">for</span> <span class="ident">ChildDropGuard</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">kill</span>();
 
         <span class="kw">if</span> <span class="ident">ret</span>.<span class="ident">is_ok</span>() {
@@ -2056,11 +2083,11 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">ChildDropGuard</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;&gt;</span> <span class="op">+</span> <span class="ident">Kill</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">F</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Kill</span> <span class="op">+</span> <span class="ident">Unpin</span>,
 {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">poll</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">poll</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
         <span class="comment">// Keep track of task budget</span>
         <span class="kw">let</span> <span class="ident">coop</span> <span class="op">=</span> <span class="macro">ready</span><span class="macro">!</span>(<span class="kw">crate</span>::<span class="ident">coop</span>::<span class="ident">poll_proceed</span>(<span class="ident">cx</span>));
 
@@ -2102,15 +2129,38 @@
     <span class="ident">child</span>: <span class="ident">FusedChild</span>,
 
     <span class="doccomment">/// The handle for writing to the child&#39;s standard input (stdin), if it has</span>
-    <span class="doccomment">/// been captured.</span>
+    <span class="doccomment">/// been captured. To avoid partially moving the `child` and thus blocking</span>
+    <span class="doccomment">/// yourself from calling functions on `child` while using `stdin`, you might</span>
+    <span class="doccomment">/// find it helpful to do:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```no_run</span>
+    <span class="doccomment">/// # let mut child = tokio::process::Command::new(&quot;echo&quot;).spawn().unwrap();</span>
+    <span class="doccomment">/// let stdin = child.stdin.take().unwrap();</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="ident">stdin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ChildStdin</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// The handle for reading from the child&#39;s standard output (stdout), if it</span>
-    <span class="doccomment">/// has been captured.</span>
+    <span class="doccomment">/// has been captured. You might find it helpful to do</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```no_run</span>
+    <span class="doccomment">/// # let mut child = tokio::process::Command::new(&quot;echo&quot;).spawn().unwrap();</span>
+    <span class="doccomment">/// let stdout = child.stdout.take().unwrap();</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// to avoid partially moving the `child` and thus blocking yourself from calling</span>
+    <span class="doccomment">/// functions on `child` while using `stdout`.</span>
     <span class="kw">pub</span> <span class="ident">stdout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ChildStdout</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// The handle for reading from the child&#39;s standard error (stderr), if it</span>
-    <span class="doccomment">/// has been captured.</span>
+    <span class="doccomment">/// has been captured. You might find it helpful to do</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```no_run</span>
+    <span class="doccomment">/// # let mut child = tokio::process::Command::new(&quot;echo&quot;).spawn().unwrap();</span>
+    <span class="doccomment">/// let stderr = child.stderr.take().unwrap();</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// to avoid partially moving the `child` and thus blocking yourself from calling</span>
+    <span class="doccomment">/// functions on `child` while using `stderr`.</span>
     <span class="kw">pub</span> <span class="ident">stderr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ChildStderr</span><span class="op">&gt;</span>,
 }
 
@@ -2121,10 +2171,10 @@
     <span class="doccomment">/// Once the child has been polled to completion this will return `None`.</span>
     <span class="doccomment">/// This is done to avoid confusion on platforms like Unix where the OS</span>
     <span class="doccomment">/// identifier could be reused once the process has completed.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">child</span> {
-            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">child</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">child</span>.<span class="ident">inner</span>.<span class="ident">id</span>()),
-            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">child</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">child</span>.<span class="ident">inner</span>.<span class="ident">id</span>()),
+            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
@@ -2135,10 +2185,10 @@
     <span class="doccomment">/// that on Unix platforms it is possible for a zombie process to remain</span>
     <span class="doccomment">/// after a kill is sent; to avoid this, the caller should ensure that either</span>
     <span class="doccomment">/// `child.wait().await` or `child.try_wait()` is invoked successfully.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">start_kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">start_kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">child</span> {
-            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">child</span>) <span class="op">=&gt;</span> <span class="ident">child</span>.<span class="ident">kill</span>(),
-            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(
+            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">child</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">child</span>.<span class="ident">kill</span>(),
+            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(
                 <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">InvalidInput</span>,
                 <span class="string">&quot;invalid argument: can&#39;t kill an exited process&quot;</span>,
             )),
@@ -2170,7 +2220,7 @@
     <span class="doccomment">///     }</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">start_kill</span>()<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">wait</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
@@ -2184,10 +2234,10 @@
     <span class="doccomment">/// before waiting. This helps avoid deadlock: it ensures that the</span>
     <span class="doccomment">/// child does not block waiting for input from the parent, while</span>
     <span class="doccomment">/// the parent waits for the child to exit.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ExitStatus</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ExitStatus</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">child</span> {
-            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="ident">exit</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">exit</span>),
-            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">child</span>) <span class="op">=&gt;</span> {
+            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="ident">exit</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">exit</span>),
+            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">child</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">child</span>.<span class="kw">await</span>;
 
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">exit</span>) <span class="op">=</span> <span class="ident">ret</span> {
@@ -2214,10 +2264,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Note that unlike `wait`, this function will not attempt to drop stdin,</span>
     <span class="doccomment">/// nor will it wake the current task if the child exits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ExitStatus</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ExitStatus</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">child</span> {
-            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="ident">exit</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">exit</span>)),
-            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">guard</span>) <span class="op">=&gt;</span> {
+            <span class="ident">FusedChild</span>::<span class="ident">Done</span>(<span class="ident">exit</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">exit</span>)),
+            <span class="ident">FusedChild</span>::<span class="ident">Child</span>(<span class="ident">guard</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">guard</span>.<span class="ident">inner</span>.<span class="ident">try_wait</span>();
 
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">exit</span>)) <span class="op">=</span> <span class="ident">ret</span> {
@@ -2247,10 +2297,10 @@
     <span class="doccomment">/// order to capture the output into this `Output` it is necessary to create</span>
     <span class="doccomment">/// new pipes between parent and child. Use `stdout(Stdio::piped())` or</span>
     <span class="doccomment">/// `stderr(Stdio::piped())`, respectively, when creating a `Command`.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_with_output</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Output</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_with_output</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Output</span><span class="op">&gt;</span> {
         <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">future</span>::<span class="ident">try_join3</span>;
 
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read_to_end</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">Unpin</span><span class="op">&gt;</span>(<span class="ident">io</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read_to_end</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">Unpin</span><span class="op">&gt;</span>(<span class="ident">io</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">io</span>) <span class="op">=</span> <span class="ident">io</span> {
                 <span class="kw">crate</span>::<span class="ident">io</span>::<span class="ident">util</span>::<span class="ident">read_to_end</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">io</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vec</span>).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -2301,39 +2351,41 @@
 
 <span class="kw">impl</span> <span class="ident">AsyncWrite</span> <span class="kw">for</span> <span class="ident">ChildStdin</span> {
     <span class="kw">fn</span> <span class="ident">poll_write</span>(
-        <span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
         <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
-    ) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;&gt;</span> {
-        <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">inner</span>).<span class="ident">poll_write</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">poll_write</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">poll_flush</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span> {
-        <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">inner</span>).<span class="ident">poll_flush</span>(<span class="ident">cx</span>)
+    <span class="kw">fn</span> <span class="ident">poll_flush</span>(<span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">Poll</span>::<span class="ident">Ready</span>(<span class="prelude-val">Ok</span>(()))
     }
 
-    <span class="kw">fn</span> <span class="ident">poll_shutdown</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span> {
-        <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">inner</span>).<span class="ident">poll_shutdown</span>(<span class="ident">cx</span>)
+    <span class="kw">fn</span> <span class="ident">poll_shutdown</span>(<span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">Poll</span>::<span class="ident">Ready</span>(<span class="prelude-val">Ok</span>(()))
     }
 }
 
 <span class="kw">impl</span> <span class="ident">AsyncRead</span> <span class="kw">for</span> <span class="ident">ChildStdout</span> {
     <span class="kw">fn</span> <span class="ident">poll_read</span>(
-        <span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
         <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ReadBuf</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span> {
-        <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">inner</span>).<span class="ident">poll_read</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="comment">// Safety: pipes support reading into uninitialized memory</span>
+        <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">poll_read</span>(<span class="ident">cx</span>, <span class="ident">buf</span>) }
     }
 }
 
 <span class="kw">impl</span> <span class="ident">AsyncRead</span> <span class="kw">for</span> <span class="ident">ChildStderr</span> {
     <span class="kw">fn</span> <span class="ident">poll_read</span>(
-        <span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
         <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ReadBuf</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span> {
-        <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">inner</span>).<span class="ident">poll_read</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="comment">// Safety: pipes support reading into uninitialized memory</span>
+        <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">poll_read</span>(<span class="ident">cx</span>, <span class="ident">buf</span>) }
     }
 }
 
@@ -2344,20 +2396,20 @@
     <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">ChildStderr</span>, <span class="ident">ChildStdin</span>, <span class="ident">ChildStdout</span>};
 
     <span class="kw">impl</span> <span class="ident">AsRawFd</span> <span class="kw">for</span> <span class="ident">ChildStdin</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawFd</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_fd</span>()
+        <span class="kw">fn</span> <span class="ident">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawFd</span> {
+            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_raw_fd</span>()
         }
     }
 
     <span class="kw">impl</span> <span class="ident">AsRawFd</span> <span class="kw">for</span> <span class="ident">ChildStdout</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawFd</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_fd</span>()
+        <span class="kw">fn</span> <span class="ident">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawFd</span> {
+            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_raw_fd</span>()
         }
     }
 
     <span class="kw">impl</span> <span class="ident">AsRawFd</span> <span class="kw">for</span> <span class="ident">ChildStderr</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawFd</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_fd</span>()
+        <span class="kw">fn</span> <span class="ident">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawFd</span> {
+            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_raw_fd</span>()
         }
     }
 }
@@ -2369,20 +2421,20 @@
     <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">ChildStderr</span>, <span class="ident">ChildStdin</span>, <span class="ident">ChildStdout</span>};
 
     <span class="kw">impl</span> <span class="ident">AsRawHandle</span> <span class="kw">for</span> <span class="ident">ChildStdin</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawHandle</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_handle</span>()
+        <span class="kw">fn</span> <span class="ident">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawHandle</span> {
+            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_raw_handle</span>()
         }
     }
 
     <span class="kw">impl</span> <span class="ident">AsRawHandle</span> <span class="kw">for</span> <span class="ident">ChildStdout</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawHandle</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_handle</span>()
+        <span class="kw">fn</span> <span class="ident">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawHandle</span> {
+            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_raw_handle</span>()
         }
     }
 
     <span class="kw">impl</span> <span class="ident">AsRawHandle</span> <span class="kw">for</span> <span class="ident">ChildStderr</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawHandle</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_handle</span>()
+        <span class="kw">fn</span> <span class="ident">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawHandle</span> {
+            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_raw_handle</span>()
         }
     }
 }
@@ -2401,15 +2453,15 @@
     <span class="kw">struct</span> <span class="ident">Mock</span> {
         <span class="ident">num_kills</span>: <span class="ident">usize</span>,
         <span class="ident">num_polls</span>: <span class="ident">usize</span>,
-        <span class="ident">poll_result</span>: <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;&gt;</span>,
+        <span class="ident">poll_result</span>: <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span><span class="op">&gt;</span>,
     }
 
     <span class="kw">impl</span> <span class="ident">Mock</span> {
-        <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
             <span class="self">Self</span>::<span class="ident">with_result</span>(<span class="ident">Poll</span>::<span class="ident">Pending</span>)
         }
 
-        <span class="kw">fn</span> <span class="ident">with_result</span>(<span class="ident">result</span>: <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="kw">fn</span> <span class="ident">with_result</span>(<span class="ident">result</span>: <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
             <span class="self">Self</span> {
                 <span class="ident">num_kills</span>: <span class="number">0</span>,
                 <span class="ident">num_polls</span>: <span class="number">0</span>,
@@ -2419,8 +2471,8 @@
     }
 
     <span class="kw">impl</span> <span class="ident">Kill</span> <span class="kw">for</span> <span class="ident">Mock</span> {
-        <span class="kw">fn</span> <span class="ident">kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-            <span class="self">self</span>.<span class="ident">num_kills</span> <span class="op">+=</span> <span class="number">1</span>;
+        <span class="kw">fn</span> <span class="ident">kill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+            <span class="self">self</span>.<span class="ident">num_kills</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             <span class="prelude-val">Ok</span>(())
         }
     }
@@ -2428,9 +2480,9 @@
     <span class="kw">impl</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">Mock</span> {
         <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span>;
 
-        <span class="kw">fn</span> <span class="ident">poll</span>(<span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">poll</span>(<span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">Pin</span>::<span class="ident">get_mut</span>(<span class="self">self</span>);
-            <span class="ident">inner</span>.<span class="ident">num_polls</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">inner</span>.<span class="ident">num_polls</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             <span class="ident">inner</span>.<span class="ident">poll_result</span>
         }
     }

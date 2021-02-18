@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `scylla/src/transport/topology.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>topology.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../scylla/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `scylla/src/transport/topology.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>topology.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../scylla/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -318,387 +320,325 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">routing</span>::<span class="ident">Token</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">connection</span>::{<span class="ident">Connection</span>, <span class="ident">ConnectionConfig</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">connection_keeper</span>::<span class="ident">ConnectionKeeper</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">errors</span>::<span class="ident">QueryError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">session</span>::<span class="ident">IntoTypedRows</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">hash_map</span>::<span class="ident">Entry</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">HashMap</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::<span class="ident">SocketAddr</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::{<span class="ident">IpAddr</span>, <span class="ident">SocketAddr</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>, <span class="ident">RwLockReadGuard</span>};
 
-<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>};
-<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">time</span>;
-
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">response</span>::<span class="ident">result</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">routing</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">connection</span>::{<span class="ident">open_connection</span>, <span class="ident">Connection</span>};
-
-<span class="kw">const</span> <span class="ident">UPDATER_CRASHED</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;the topology updater thread has crashed. Need to restart it.&quot;</span>;
-
-<span class="comment">// Represents a view of the cluster&#39;s topology, including the shape of the token ring.</span>
-<span class="comment">// Assiociated with a TopologyReader which may send update messages.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Topology</span> {
-    <span class="comment">// TODO accessing the ring through Arc&lt;RwLock&lt;...&gt;&gt; on each read is not the best for efficiency</span>
-    <span class="comment">// the ring should probably be cached, and the cache refreshed periodically using the Arc</span>
-    <span class="comment">// calling refresh() would refresh it synchronously</span>
-    <span class="ident">ring</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Ring</span><span class="op">&gt;&gt;</span>,
-
-    <span class="ident">refresh_tx</span>: <span class="ident">mpsc</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RefreshRequest</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">struct</span> <span class="ident">RefreshRequest</span> {
-    <span class="ident">ack_tx</span>: <span class="ident">oneshot</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span>,
-}
-
-<span class="comment">// Responsible for periodically updating a Topology.</span>
+<span class="doccomment">/// Allows to read current topology info from the cluster</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TopologyReader</span> {
-    <span class="comment">// invariant: nonempty</span>
-    <span class="ident">pool</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Node</span>, <span class="ident">Connection</span><span class="op">&gt;</span>,
-
-    <span class="comment">// invariant:</span>
-    <span class="comment">//  1. for every key `n` in `tokens`,</span>
-    <span class="comment">//     for every `t` in tokens[`n`],</span>
-    <span class="comment">//     `ring.owners` has a `(t, n)` entry</span>
-    <span class="comment">//  2. for every `(t, n)` entry in `ring.owners`,</span>
-    <span class="comment">//     `tokens` has an entry with key `n`,</span>
-    <span class="comment">//     and `tokens[n]` contains `t`.</span>
-    <span class="comment">//</span>
-    <span class="comment">// `tokens` also serves as a container for cluster members that we know (using the keys of the map).</span>
-    <span class="comment">// We assume that every ``normal&#39;&#39; member of the cluster (so not a joining or leaving one) has</span>
-    <span class="comment">// tokens in the ring. TODO: this might change in the future; in this case we&#39;ll need a</span>
-    <span class="comment">// separate set.</span>
-    <span class="ident">tokens</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Node</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">ring</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Ring</span><span class="op">&gt;&gt;</span>,
-
-    <span class="ident">refresh_rx</span>: <span class="ident">mpsc</span>::<span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">RefreshRequest</span><span class="op">&gt;</span>,
-
-    <span class="comment">// Global port for the cluster. Assumes every node listens on this</span>
-    <span class="ident">port</span>: <span class="ident">u16</span>,
+    <span class="ident">control_connections</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">SocketAddr</span>, <span class="ident">ConnectionKeeper</span><span class="op">&gt;</span>,
+    <span class="ident">connect_port</span>: <span class="ident">u16</span>,
+    <span class="ident">connection_config</span>: <span class="ident">ConnectionConfig</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Topology</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_ring</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RwLockReadGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">Ring</span><span class="op">&gt;&gt;</span> {
-        <span class="self">self</span>.<span class="ident">ring</span>.<span class="ident">read</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">UPDATER_CRASHED</span>))
-    }
+<span class="doccomment">/// Describes all topology information retrieved from the cluster</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TopologyInfo</span> {
+    <span class="kw">pub</span> <span class="ident">peers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">keyspaces</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Keyspace</span><span class="op">&gt;</span>,
+}
 
-    <span class="comment">// Performs a synchronous refresh of the topology information.</span>
-    <span class="comment">// After the returned future is awaited, stored topology is not older</span>
-    <span class="comment">// than the cluster&#39;s topology at the moment `refresh` was called.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">refresh</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">ack_tx</span>, <span class="ident">ack_rx</span>) <span class="op">=</span> <span class="ident">oneshot</span>::<span class="ident">channel</span>();
-        <span class="self">self</span>.<span class="ident">refresh_tx</span>
-            .<span class="ident">send</span>(<span class="ident">RefreshRequest</span> { <span class="ident">ack_tx</span> })
-            .<span class="kw">await</span>
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">UPDATER_CRASHED</span>))<span class="question-mark">?</span>;
-        <span class="ident">ack_rx</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">UPDATER_CRASHED</span>))<span class="question-mark">?</span>
-    }
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Peer</span> {
+    <span class="kw">pub</span> <span class="ident">address</span>: <span class="ident">SocketAddr</span>,
+    <span class="kw">pub</span> <span class="ident">tokens</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">datacenter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">rack</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Keyspace</span> {
+    <span class="kw">pub</span> <span class="ident">strategy</span>: <span class="ident">Strategy</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Strategy</span> {
+    <span class="ident">SimpleStrategy</span> {
+        <span class="ident">replication_factor</span>: <span class="ident">usize</span>,
+    },
+    <span class="ident">NetworkTopologyStrategy</span> {
+        <span class="comment">// Replication factors of datacenters with given names</span>
+        <span class="ident">datacenter_repfactors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">usize</span><span class="op">&gt;</span>,
+    },
+    <span class="ident">LocalStrategy</span>, <span class="comment">// replication_factor == 1</span>
+    <span class="ident">Other</span> {
+        <span class="ident">name</span>: <span class="ident">String</span>,
+        <span class="ident">data</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
+    },
 }
 
 <span class="kw">impl</span> <span class="ident">TopologyReader</span> {
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">Node</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="self">Self</span>, <span class="ident">Topology</span>)<span class="op">&gt;</span> {
-        <span class="comment">// TODO: use compression? maybe not necessarily, since the communicated objects are</span>
-        <span class="comment">// small and the communication doesn&#39;t happen often?</span>
-        <span class="kw">let</span> <span class="ident">conn</span> <span class="op">=</span> <span class="ident">open_connection</span>(<span class="ident">n</span>.<span class="ident">addr</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="doccomment">/// Creates new TopologyReader, which connects to known_peers in the background</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">known_peers</span>: <span class="kw-2">&amp;</span>[<span class="ident">SocketAddr</span>], <span class="ident">connection_config</span>: <span class="ident">ConnectionConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">connect_port</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="ident">known_peers</span>
+            .<span class="ident">first</span>()
+            .<span class="ident">expect</span>(<span class="string">&quot;Tried to initialize TopologyReader with empty known_peers list!&quot;</span>)
+            .<span class="ident">port</span>();
 
-        <span class="comment">// TODO: When querying system.local of `n` or system.peers of other nodes, we might find</span>
-        <span class="comment">// that the address of `n` is different than `n.addr` (`n` might have multiple addresses).</span>
-        <span class="comment">// We need to deal with that. Since the data structures are filled using data obtained from</span>
-        <span class="comment">// `system.peers` and `system.local`, we probably need to query `system.local` for the</span>
-        <span class="comment">// address that `n` itself prefers.</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">control_connections</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">SocketAddr</span>, <span class="ident">ConnectionKeeper</span><span class="op">&gt;</span> <span class="op">=</span>
+            <span class="ident">HashMap</span>::<span class="ident">with_capacity</span>(<span class="ident">known_peers</span>.<span class="ident">len</span>());
 
-        <span class="kw">let</span> <span class="ident">toks</span> <span class="op">=</span> <span class="ident">query_local_tokens</span>(<span class="kw-2">&amp;</span><span class="ident">conn</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">toks</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.local tokens empty on the node&quot;</span>));
+        <span class="kw">for</span> <span class="ident">address</span> <span class="kw">in</span> <span class="ident">known_peers</span> {
+            <span class="ident">control_connections</span>.<span class="ident">insert</span>(
+                <span class="kw-2">*</span><span class="ident">address</span>,
+                <span class="ident">ConnectionKeeper</span>::<span class="ident">new</span>(<span class="kw-2">*</span><span class="ident">address</span>, <span class="ident">connection_config</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
+            );
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">owners</span> <span class="op">=</span> <span class="ident">BTreeMap</span>::<span class="ident">new</span>();
-        <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">t</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">toks</span> {
-            <span class="ident">owners</span>.<span class="ident">insert</span>(<span class="ident">t</span>, <span class="ident">n</span>);
-        }
-
-        <span class="kw">let</span> <span class="ident">ring</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Ring</span> { <span class="ident">owners</span> }));
-        <span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[(<span class="ident">n</span>, <span class="ident">toks</span>)].<span class="ident">into_iter</span>().<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[(<span class="ident">n</span>, <span class="ident">conn</span>)].<span class="ident">into_iter</span>().<span class="ident">collect</span>();
-        <span class="kw">let</span> (<span class="ident">refresh_tx</span>, <span class="ident">refresh_rx</span>) <span class="op">=</span> <span class="ident">mpsc</span>::<span class="ident">channel</span>(<span class="number">32</span>);
-
-        <span class="prelude-val">Ok</span>((
-            <span class="ident">TopologyReader</span> {
-                <span class="ident">pool</span>,
-                <span class="ident">tokens</span>,
-                <span class="ident">ring</span>: <span class="ident">ring</span>.<span class="ident">clone</span>(),
-                <span class="ident">refresh_rx</span>,
-                <span class="ident">port</span>: <span class="ident">n</span>.<span class="ident">addr</span>.<span class="ident">port</span>(),
-            },
-            <span class="ident">Topology</span> { <span class="ident">ring</span>, <span class="ident">refresh_tx</span> },
-        ))
-    }
-
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">use</span> <span class="ident">time</span>::<span class="ident">Duration</span>;
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sleep_dur</span> <span class="op">=</span> <span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">0</span>);
-        <span class="kw">loop</span> {
-            <span class="ident">tokio</span>::<span class="macro">select</span><span class="macro">!</span> {
-                <span class="kw">_</span> <span class="op">=</span> <span class="ident">time</span>::<span class="ident">sleep</span>(<span class="ident">sleep_dur</span>) <span class="op">=&gt;</span> {
-                    <span class="ident">sleep_dur</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">refresh</span>().<span class="kw">await</span> {
-                        <span class="prelude-val">Ok</span>(()) <span class="op">=&gt;</span> <span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">10</span>),
-                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
-                            <span class="comment">// TODO: use appropriate logging mechanism</span>
-                            <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;TopologyReader: error on periodic topology refresh: {}. Will retry&quot;</span>, <span class="ident">e</span>);
-                            <span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">2</span>)
-                        }
-                    };
-                },
-                <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">refresh_rx</span>.<span class="ident">recv</span>() <span class="op">=&gt;</span> {
-                    <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">ack_tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">refresh</span>().<span class="kw">await</span>);
-                    <span class="comment">// If there was a send error, the other end must have closed the channel, i.e.</span>
-                    <span class="comment">// it wasn&#39;t interested in the result anymore. We don&#39;t need to do anything.</span>
-                    <span class="ident">sleep_dur</span> <span class="op">=</span> <span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">10</span>)
-                }
-            }
+        <span class="ident">TopologyReader</span> {
+            <span class="ident">control_connections</span>,
+            <span class="ident">connect_port</span>,
+            <span class="ident">connection_config</span>,
         }
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">refresh</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="ident">time</span>::{<span class="ident">timeout</span>, <span class="ident">Duration</span>};
+    <span class="doccomment">/// Fetches current topology info from the cluster</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read_topology_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TopologyInfo</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fetch_topology_info</span>().<span class="kw">await</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">broken_connections</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">refreshed</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        <span class="kw">for</span> (<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="ident">conn</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">iter</span>() {
-            <span class="comment">// TODO: handle broken connections</span>
-            <span class="comment">// TODO: after short timeout, attempt to refresh on another connection *in parallel*</span>
-            <span class="comment">// while continuing waiting on the previous connection</span>
-            <span class="kw">let</span> (<span class="ident">peer_addrs</span>, <span class="kw">_</span>) <span class="op">=</span>
-                <span class="kw">match</span> <span class="ident">timeout</span>(<span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">5</span>), <span class="ident">query_peers</span>(<span class="ident">conn</span>, <span class="bool-val">false</span>, <span class="self">self</span>.<span class="ident">port</span>)).<span class="kw">await</span> {
-                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
-                        <span class="comment">// A timeout doesn&#39;t necessarily mean that the connection is useless.</span>
-                        <span class="comment">// It may be a temporary network partition between us and the server.</span>
-                        <span class="kw">continue</span>;
-                    }
-                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">ret</span>)) <span class="op">=&gt;</span> <span class="ident">ret</span>,
-                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) <span class="op">=&gt;</span> {
-                        <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Error when querying system.peers of {}: {}&quot;</span>, <span class="ident">node</span>.<span class="ident">addr</span>, <span class="ident">e</span>);
-                        <span class="comment">// TODO distinguish between different error types and react accordingly</span>
-                        <span class="comment">// for now, we just drop the connection on every error.</span>
-                        <span class="ident">broken_connections</span>.<span class="ident">push</span>(<span class="ident">node</span>);
-                        <span class="kw">continue</span>;
-                    }
-                };
-
-            <span class="comment">// We assume that tokens of existing peers don&#39;t change.</span>
-            <span class="comment">// TODO: in the future this assumption might become false</span>
-            <span class="kw">let</span> <span class="ident">need_new_tokens</span> <span class="op">=</span> <span class="ident">peer_addrs</span>
-                .<span class="ident">iter</span>()
-                .<span class="ident">any</span>(<span class="op">|</span><span class="ident">addr</span><span class="op">|</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">tokens</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">Node</span> { <span class="ident">addr</span>: <span class="kw-2">*</span><span class="ident">addr</span> }));
-
-            <span class="kw">if</span> <span class="ident">need_new_tokens</span> {
-                <span class="kw">let</span> (<span class="ident">peer_addrs</span>, <span class="ident">peer_toks</span>) <span class="op">=</span>
-                    <span class="kw">match</span> <span class="ident">timeout</span>(<span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">5</span>), <span class="ident">query_peers</span>(<span class="ident">conn</span>, <span class="bool-val">true</span>, <span class="self">self</span>.<span class="ident">port</span>)).<span class="kw">await</span>
-                    {
-                        <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">continue</span>,
-                        <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">ret</span>)) <span class="op">=&gt;</span> <span class="ident">ret</span>,
-                        <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) <span class="op">=&gt;</span> {
-                            <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Error when querying system.peers of {}: {}&quot;</span>, <span class="ident">node</span>.<span class="ident">addr</span>, <span class="ident">e</span>);
-                            <span class="comment">// TODO get rid of copy-pasta</span>
-                            <span class="ident">broken_connections</span>.<span class="ident">push</span>(<span class="ident">node</span>);
-                            <span class="kw">continue</span>;
-                        }
-                    };
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">peer_addrs</span>.<span class="ident">len</span>(), <span class="ident">peer_toks</span>.<span class="ident">len</span>());
-                <span class="kw">for</span> (<span class="ident">addr</span>, <span class="ident">toks</span>) <span class="kw">in</span> <span class="ident">peer_addrs</span>.<span class="ident">into_iter</span>().<span class="ident">zip</span>(<span class="ident">peer_toks</span>.<span class="ident">into_iter</span>()) {
-                    <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">Node</span> { <span class="ident">addr</span> };
-                    <span class="kw">let</span> <span class="ident">new_ring</span> <span class="op">=</span> {
-                        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ring</span> <span class="op">=</span> <span class="self">self</span>
-                            .<span class="ident">ring</span>
-                            .<span class="ident">read</span>()
-                            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;poisoned ring lock&quot;</span>)) <span class="comment">// TODO: handle this better?</span>
-                            .<span class="ident">clone</span>();
-                        <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">t</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">toks</span> {
-                            <span class="ident">ring</span>.<span class="ident">owners</span>.<span class="ident">insert</span>(<span class="ident">t</span>, <span class="ident">n</span>);
-                        }
-                        <span class="ident">ring</span>
-                    };
-
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ring_ref</span> <span class="op">=</span> <span class="self">self</span>
-                        .<span class="ident">ring</span>
-                        .<span class="ident">write</span>()
-                        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;poisoned ring lock&quot;</span>)); <span class="comment">// TODO same as above?</span>
-                    <span class="kw-2">*</span><span class="ident">ring_ref</span> <span class="op">=</span> <span class="ident">new_ring</span>;
-
-                    <span class="self">self</span>.<span class="ident">tokens</span>.<span class="ident">insert</span>(<span class="ident">n</span>, <span class="ident">toks</span>);
-                }
-            }
-
-            <span class="comment">// TODO: Remove nodes that are not in peers anymore</span>
-            <span class="comment">// (from pool, tokens, and ring)</span>
-
-            <span class="ident">refreshed</span> <span class="op">=</span> <span class="bool-val">true</span>;
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">topology_info</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">result</span> {
+            <span class="self">self</span>.<span class="ident">update_control_connections</span>(<span class="ident">topology_info</span>);
         }
 
-        <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">broken_connections</span> {
-            <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>);
+        <span class="kw">return</span> <span class="ident">result</span>;
+    }
+
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_topology_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TopologyInfo</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="comment">// TODO: Timeouts? New attempts in parallel?</span>
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_error</span>: <span class="ident">QueryError</span> <span class="op">=</span> <span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+            <span class="string">&quot;Invariant broken - TopologyReader control_connections not empty&quot;</span>,
+        );
+
+        <span class="kw">for</span> <span class="ident">conn</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">control_connections</span>.<span class="ident">values</span>() {
+            <span class="kw">match</span> <span class="ident">query_topology_info</span>(<span class="ident">conn</span>, <span class="self">self</span>.<span class="ident">connect_port</span>).<span class="kw">await</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">info</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">info</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">last_error</span> <span class="op">=</span> <span class="ident">e</span>,
+            };
         }
 
-        <span class="comment">// Try opening new connections</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">any_new</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">node</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">tokens</span>.<span class="ident">keys</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Entry</span>::<span class="ident">Vacant</span>(<span class="ident">entry</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">entry</span>(<span class="ident">node</span>) {
-                <span class="comment">// TODO: use compression?</span>
-                <span class="kw">let</span> <span class="ident">conn</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">timeout</span>(
-                    <span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">5</span>),
-                    <span class="ident">open_connection</span>(<span class="ident">node</span>.<span class="ident">addr</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
-                )
-                .<span class="kw">await</span>
-                {
-                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
-                        <span class="comment">// TODO: logging</span>
-                        <span class="macro">eprintln</span><span class="macro">!</span>(
-                            <span class="string">&quot;TopologyReader: timeout when trying to open connection to {}&quot;</span>,
-                            <span class="ident">node</span>.<span class="ident">addr</span>
-                        );
-                        <span class="kw">continue</span>;
-                    }
-                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) <span class="op">=&gt;</span> {
-                        <span class="comment">// TODO: logging</span>
-                        <span class="macro">eprintln</span><span class="macro">!</span>(
-                            <span class="string">&quot;TopologyReader: failed to open connection to {}: {}&quot;</span>,
-                            <span class="ident">node</span>.<span class="ident">addr</span>, <span class="ident">e</span>
-                        );
-                        <span class="kw">continue</span>;
-                    }
-                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">conn</span>)) <span class="op">=&gt;</span> <span class="ident">conn</span>,
-                };
-                <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;TopologyReader: opened new connection to {}&quot;</span>, <span class="ident">node</span>.<span class="ident">addr</span>);
-                <span class="ident">entry</span>.<span class="ident">insert</span>(<span class="ident">conn</span>);
-                <span class="ident">any_new</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
+        <span class="prelude-val">Err</span>(<span class="ident">last_error</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">update_control_connections</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">topology_info</span>: <span class="kw-2">&amp;</span><span class="ident">TopologyInfo</span>) {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_control_connections</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">SocketAddr</span>, <span class="ident">ConnectionKeeper</span><span class="op">&gt;</span> <span class="op">=</span>
+            <span class="ident">HashMap</span>::<span class="ident">with_capacity</span>(<span class="ident">topology_info</span>.<span class="ident">peers</span>.<span class="ident">len</span>());
+
+        <span class="kw">for</span> <span class="ident">peer</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">topology_info</span>.<span class="ident">peers</span> {
+            <span class="kw">let</span> <span class="ident">cur_connection</span> <span class="op">=</span> <span class="self">self</span>
+                .<span class="ident">control_connections</span>
+                .<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>.<span class="ident">address</span>)
+                .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> {
+                    <span class="ident">ConnectionKeeper</span>::<span class="ident">new</span>(<span class="ident">peer</span>.<span class="ident">address</span>, <span class="self">self</span>.<span class="ident">connection_config</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+                });
+
+            <span class="ident">new_control_connections</span>.<span class="ident">insert</span>(<span class="ident">peer</span>.<span class="ident">address</span>, <span class="ident">cur_connection</span>);
         }
 
-        <span class="kw">if</span> <span class="ident">refreshed</span> {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
-        }
-
-        <span class="kw">if</span> <span class="ident">any_new</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(
-                <span class="string">&quot;refreshing failed on every connection, but new connections have been opened&quot;</span>
-            ));
-        }
-
-        <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(
-            <span class="string">&quot;refreshing failed on every connection; no new connections could be opened&quot;</span>
-        ))
+        <span class="self">self</span>.<span class="ident">control_connections</span> <span class="op">=</span> <span class="ident">new_control_connections</span>;
     }
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_local_tokens</span>(<span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;&gt;</span> {
-    <span class="ident">unwrap_tokens</span>(
-        <span class="ident">c</span>.<span class="ident">query_single_page</span>(<span class="string">&quot;SELECT tokens FROM system.local&quot;</span>, <span class="kw-2">&amp;</span>[])
-            .<span class="kw">await</span><span class="question-mark">?</span>
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Expected rows result when querying system.local&quot;</span>))<span class="question-mark">?</span>
-            .<span class="ident">into_iter</span>()
-            .<span class="ident">next</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.local query result empty&quot;</span>))<span class="question-mark">?</span>
-            .<span class="ident">columns</span>
-            .<span class="ident">into_iter</span>()
-            .<span class="ident">next</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.local `tokens` query returned no columns&quot;</span>))<span class="question-mark">?</span>,
-    )
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_topology_info</span>(
+    <span class="ident">conn_keeper</span>: <span class="kw-2">&amp;</span><span class="ident">ConnectionKeeper</span>,
+    <span class="ident">connect_port</span>: <span class="ident">u16</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TopologyInfo</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">conn</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">conn_keeper</span>.<span class="ident">get_connection</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">peers_query</span> <span class="op">=</span> <span class="ident">query_peers</span>(<span class="ident">conn</span>, <span class="ident">connect_port</span>);
+    <span class="kw">let</span> <span class="ident">keyspaces_query</span> <span class="op">=</span> <span class="ident">query_keyspaces</span>(<span class="ident">conn</span>);
+
+    <span class="kw">let</span> (<span class="ident">peers</span>, <span class="ident">keyspaces</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="macro">try_join</span><span class="macro">!</span>(<span class="ident">peers_query</span>, <span class="ident">keyspaces_query</span>)<span class="question-mark">?</span>;
+
+    <span class="comment">// There must be at least one peer</span>
+    <span class="kw">if</span> <span class="ident">peers</span>.<span class="ident">is_empty</span>() {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+            <span class="string">&quot;Bad TopologyInfo: peers list is empty&quot;</span>,
+        ));
+    }
+
+    <span class="comment">// At least one peer has to have some tokens</span>
+    <span class="kw">if</span> <span class="ident">peers</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">peer</span><span class="op">|</span> <span class="ident">peer</span>.<span class="ident">tokens</span>.<span class="ident">is_empty</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+            <span class="string">&quot;Bad TopoologyInfo: All peers have empty token list&quot;</span>,
+        ));
+    }
+
+    <span class="prelude-val">Ok</span>(<span class="ident">TopologyInfo</span> { <span class="ident">peers</span>, <span class="ident">keyspaces</span> })
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_peers</span>(
-    <span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>,
-    <span class="ident">get_tokens</span>: <span class="ident">bool</span>,
-    <span class="ident">port</span>: <span class="ident">u16</span>,
-) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;&gt;</span>)<span class="op">&gt;</span> {
-    <span class="comment">// TODO: do we want `peer`, `preferred_ip`, or `rpc_address`? Which one is `external`?</span>
-    <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">c</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_peers</span>(<span class="ident">conn</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>, <span class="ident">connect_port</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+    <span class="comment">// There shouldn&#39;t be more peers than a single page capacity</span>
+    <span class="kw">let</span> <span class="ident">peers_query</span> <span class="op">=</span> <span class="ident">conn</span>.<span class="ident">query_single_page</span>(
+        <span class="string">&quot;select peer, data_center, rack, tokens from system.peers&quot;</span>,
+        <span class="kw-2">&amp;</span>[],
+    );
+    <span class="kw">let</span> <span class="ident">local_query</span> <span class="op">=</span> <span class="ident">conn</span>.<span class="ident">query_single_page</span>(
+        <span class="string">&quot;select rpc_address, data_center, rack, tokens from system.local&quot;</span>,
+        <span class="kw-2">&amp;</span>[],
+    );
+
+    <span class="kw">let</span> (<span class="ident">peers_res</span>, <span class="ident">local_res</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="macro">try_join</span><span class="macro">!</span>(<span class="ident">peers_query</span>, <span class="ident">local_query</span>)<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">peers_rows</span> <span class="op">=</span> <span class="ident">peers_res</span>.<span class="ident">ok_or</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+        <span class="string">&quot;system.peers query response was not Rows&quot;</span>,
+    ))<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">local_rows</span> <span class="op">=</span> <span class="ident">local_res</span>.<span class="ident">ok_or</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+        <span class="string">&quot;system.local query response was not Rows&quot;</span>,
+    ))<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">peers_rows</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>);
+
+    <span class="kw">let</span> <span class="ident">typed_peers_rows</span> <span class="op">=</span>
+        <span class="ident">peers_rows</span>.<span class="ident">into_typed</span>::<span class="op">&lt;</span>(<span class="ident">IpAddr</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>();
+    <span class="kw">let</span> <span class="ident">typed_local_rows</span> <span class="op">=</span>
+        <span class="ident">local_rows</span>.<span class="ident">into_typed</span>::<span class="op">&lt;</span>(<span class="ident">IpAddr</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>();
+
+    <span class="comment">// Here we are considering the local node to be just a regular peer, but datastax claims that unless</span>
+    <span class="comment">// you have SNI enabled, you shouldn&#39;t trust rpc_address (So they just use the initial connection&#39;s address)</span>
+    <span class="comment">// we could expose this from conn &amp; use it directly instead of system.local.rpc_address</span>
+
+    <span class="kw">for</span> <span class="ident">row</span> <span class="kw">in</span> <span class="ident">typed_peers_rows</span>.<span class="ident">chain</span>(<span class="ident">typed_local_rows</span>) {
+        <span class="kw">let</span> (<span class="ident">ip_address</span>, <span class="ident">datacenter</span>, <span class="ident">rack</span>, <span class="ident">tokens</span>) <span class="op">=</span> <span class="ident">row</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+            <span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(<span class="string">&quot;system.peers or system.local has invalid column type&quot;</span>)
+        })<span class="question-mark">?</span>;
+
+        <span class="kw">let</span> <span class="ident">tokens_str</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">tokens</span>.<span class="ident">unwrap_or_default</span>();
+
+        <span class="kw">let</span> <span class="ident">address</span> <span class="op">=</span> <span class="ident">SocketAddr</span>::<span class="ident">new</span>(<span class="ident">ip_address</span>, <span class="ident">connect_port</span>);
+
+        <span class="comment">// Parse string representation of tokens as integer values</span>
+        <span class="kw">let</span> <span class="ident">tokens</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">tokens_str</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">Token</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>))
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(<span class="string">&quot;Couldn&#39;t parse tokens as integer values&quot;</span>))<span class="question-mark">?</span>;
+
+        <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">Peer</span> {
+            <span class="ident">address</span>,
+            <span class="ident">datacenter</span>,
+            <span class="ident">rack</span>,
+            <span class="ident">tokens</span>,
+        });
+    }
+
+    <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
+}
+
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_keyspaces</span>(<span class="ident">conn</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Keyspace</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">conn</span>
         .<span class="ident">query_single_page</span>(
-            <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;SELECT {} FROM system.peers&quot;</span>,
-                <span class="kw">if</span> <span class="ident">get_tokens</span> { <span class="string">&quot;peer, tokens&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;peer&quot;</span> }
-            ),
+            <span class="string">&quot;select keyspace_name, toJson(replication) from system_schema.keyspaces&quot;</span>,
             <span class="kw-2">&amp;</span>[],
         )
         .<span class="kw">await</span><span class="question-mark">?</span>
-        .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Expected rows result when querying system.peers&quot;</span>))<span class="question-mark">?</span>;
+        .<span class="ident">ok_or</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+            <span class="string">&quot;system_schema.keyspaces query response was not Rows&quot;</span>,
+        ))<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">rows</span>.<span class="ident">len</span>());
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">get_tokens</span> {
-        <span class="macro">vec</span><span class="macro">!</span>[]
-    } <span class="kw">else</span> {
-        <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">rows</span>.<span class="ident">len</span>())
-    };
-    <span class="kw">for</span> <span class="ident">row</span> <span class="kw">in</span> <span class="ident">rows</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">col_iter</span> <span class="op">=</span> <span class="ident">row</span>.<span class="ident">columns</span>.<span class="ident">into_iter</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">with_capacity</span>(<span class="ident">rows</span>.<span class="ident">len</span>());
 
-        <span class="kw">let</span> <span class="ident">peer</span> <span class="op">=</span> <span class="ident">col_iter</span>
-            .<span class="ident">next</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.peers `peer` query returned no columns&quot;</span>))<span class="question-mark">?</span>
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.peers `peer` query returned null&quot;</span>))<span class="question-mark">?</span>
-            .<span class="ident">as_inet</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.peers `peer` query returned wrong value type&quot;</span>))<span class="question-mark">?</span>;
-        <span class="ident">addrs</span>.<span class="ident">push</span>(<span class="ident">SocketAddr</span>::<span class="ident">new</span>(<span class="ident">peer</span>, <span class="ident">port</span>));
+    <span class="kw">for</span> <span class="ident">row</span> <span class="kw">in</span> <span class="ident">rows</span>.<span class="ident">into_typed</span>::<span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">String</span>)<span class="op">&gt;</span>() {
+        <span class="kw">let</span> (<span class="ident">keyspace_name</span>, <span class="ident">keyspace_json_text</span>) <span class="op">=</span> <span class="ident">row</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+            <span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(<span class="string">&quot;system_schema.keyspaces has invalid column type&quot;</span>)
+        })<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="ident">get_tokens</span> {
-            <span class="kw">let</span> <span class="ident">toks</span> <span class="op">=</span> <span class="ident">unwrap_tokens</span>(
-                <span class="ident">col_iter</span>
-                    .<span class="ident">next</span>()
-                    .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;system.peers `tokens` query returned no columns&quot;</span>))<span class="question-mark">?</span>,
-            )<span class="question-mark">?</span>;
-            <span class="ident">tokens</span>.<span class="ident">push</span>(<span class="ident">toks</span>);
-        }
+        <span class="kw">let</span> <span class="ident">strategy_map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">json_to_string_map</span>(<span class="kw-2">&amp;</span><span class="ident">keyspace_json_text</span>)<span class="question-mark">?</span>;
+
+        <span class="kw">let</span> <span class="ident">strategy</span>: <span class="ident">Strategy</span> <span class="op">=</span> <span class="ident">strategy_from_string_map</span>(<span class="ident">strategy_map</span>)<span class="question-mark">?</span>;
+
+        <span class="ident">result</span>.<span class="ident">insert</span>(<span class="ident">keyspace_name</span>, <span class="ident">Keyspace</span> { <span class="ident">strategy</span> });
     }
-    <span class="prelude-val">Ok</span>((<span class="ident">addrs</span>, <span class="ident">tokens</span>))
+
+    <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">unwrap_tokens</span>(<span class="ident">tokens_val_opt</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">CQLValue</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">tokens_val</span> <span class="op">=</span> <span class="ident">tokens_val_opt</span>.<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;tokens value null&quot;</span>))<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">tokens_val</span>
-        .<span class="ident">as_set</span>()
-        .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;tokens value type is not a set&quot;</span>))<span class="question-mark">?</span>;
+<span class="kw">fn</span> <span class="ident">json_to_string_map</span>(<span class="ident">json_text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+    <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>;
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">tokens</span>.<span class="ident">len</span>());
-    <span class="kw">for</span> <span class="ident">tok_val</span> <span class="kw">in</span> <span class="ident">tokens</span> {
-        <span class="kw">let</span> <span class="ident">tok</span> <span class="op">=</span> <span class="ident">tok_val</span>
-            .<span class="ident">as_text</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;tokens set contained a non-text value&quot;</span>))<span class="question-mark">?</span>;
-        <span class="ident">ret</span>.<span class="ident">push</span>(
-            <span class="ident">Token</span>::<span class="ident">from_str</span>(<span class="ident">tok</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;failed to parse token {}: {}&quot;</span>, <span class="ident">tok</span>, <span class="ident">e</span>))<span class="question-mark">?</span>,
-        );
+    <span class="kw">let</span> <span class="ident">json</span>: <span class="ident">Value</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">json_text</span>)
+        .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(<span class="string">&quot;Couldn&#39;t parse keyspaces as json&quot;</span>))<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">object_map</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">json</span> {
+        <span class="ident">Value</span>::<span class="ident">Object</span>(<span class="ident">map</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">map</span>,
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                <span class="string">&quot;keyspaces map json is not a json object&quot;</span>,
+            ))
+        }
+    };
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">with_capacity</span>(<span class="ident">object_map</span>.<span class="ident">len</span>());
+
+    <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">val</span>) <span class="kw">in</span> <span class="ident">object_map</span>.<span class="ident">into_iter</span>() {
+        <span class="kw">match</span> <span class="ident">val</span> {
+            <span class="ident">Value</span>::<span class="ident">String</span>(<span class="ident">string</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span>.<span class="ident">insert</span>(<span class="ident">key</span>, <span class="ident">string</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                    <span class="string">&quot;json keyspaces map does not contain strings&quot;</span>,
+                ))
+            }
+        };
     }
-    <span class="prelude-val">Ok</span>(<span class="ident">ret</span>)
+
+    <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
+}
+
+<span class="kw">fn</span> <span class="ident">strategy_from_string_map</span>(
+    <span class="kw-2">mut</span> <span class="ident">strategy_map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Strategy</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">strategy_name</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">strategy_map</span>
+        .<span class="ident">remove</span>(<span class="string">&quot;class&quot;</span>)
+        .<span class="ident">ok_or</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+            <span class="string">&quot;strategy map should have a &#39;class&#39; field&quot;</span>,
+        ))<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">strategy</span>: <span class="ident">Strategy</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">strategy_name</span>.<span class="ident">as_str</span>() {
+        <span class="string">&quot;org.apache.cassandra.locator.SimpleStrategy&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">rep_factor_str</span>: <span class="ident">String</span> <span class="op">=</span>
+                <span class="ident">strategy_map</span>
+                    .<span class="ident">remove</span>(<span class="string">&quot;replication_factor&quot;</span>)
+                    .<span class="ident">ok_or</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                        <span class="string">&quot;SimpleStrategy in strategy map does not have a replication factor&quot;</span>,
+                    ))<span class="question-mark">?</span>;
+
+            <span class="kw">let</span> <span class="ident">replication_factor</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">usize</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">rep_factor_str</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+                <span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(<span class="string">&quot;Could not parse replication factor as an integer&quot;</span>)
+            })<span class="question-mark">?</span>;
+
+            <span class="ident">Strategy</span>::<span class="ident">SimpleStrategy</span> { <span class="ident">replication_factor</span> }
+        }
+        <span class="string">&quot;org.apache.cassandra.locator.NetworkTopologyStrategy&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">datacenter_repfactors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span>
+                <span class="ident">HashMap</span>::<span class="ident">with_capacity</span>(<span class="ident">strategy_map</span>.<span class="ident">len</span>());
+
+            <span class="kw">for</span> (<span class="ident">datacenter</span>, <span class="ident">rep_factor_str</span>) <span class="kw">in</span> <span class="ident">strategy_map</span>.<span class="ident">drain</span>() {
+                <span class="kw">let</span> <span class="ident">rep_factor</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">usize</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">rep_factor_str</span>) {
+                    <span class="prelude-val">Ok</span>(<span class="ident">number</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">number</span>,
+                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">continue</span>, <span class="comment">// There might be other things in the map, we care only about rep_factors</span>
+                };
+
+                <span class="ident">datacenter_repfactors</span>.<span class="ident">insert</span>(<span class="ident">datacenter</span>, <span class="ident">rep_factor</span>);
+            }
+
+            <span class="ident">Strategy</span>::<span class="ident">NetworkTopologyStrategy</span> {
+                <span class="ident">datacenter_repfactors</span>,
+            }
+        }
+        <span class="string">&quot;org.apache.cassandra.locator.LocalStrategy&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Strategy</span>::<span class="ident">LocalStrategy</span>,
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Strategy</span>::<span class="ident">Other</span> {
+            <span class="ident">name</span>: <span class="ident">strategy_name</span>,
+            <span class="ident">data</span>: <span class="ident">strategy_map</span>,
+        },
+    };
+
+    <span class="prelude-val">Ok</span>(<span class="ident">strategy</span>)
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "scylla";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

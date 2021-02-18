@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `scylla/src/transport/session.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>session.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../scylla/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `scylla/src/transport/session.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>session.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../scylla/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -423,65 +425,292 @@
 <span id="422">422</span>
 <span id="423">423</span>
 <span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span>;
-<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">future</span>::<span class="ident">RemoteHandle</span>, <span class="ident">FutureExt</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">hash_map</span>::<span class="ident">Entry</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span>;
+<span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">future</span>::<span class="ident">join_all</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::<span class="ident">SocketAddr</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
-<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">net</span>::{<span class="ident">lookup_host</span>, <span class="ident">ToSocketAddrs</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Instant</span>;
+<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">lookup_host</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cql_to_rust</span>::{<span class="ident">FromRow</span>, <span class="ident">FromRowError</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">errors</span>::{<span class="ident">BadQuery</span>, <span class="ident">NewSessionError</span>, <span class="ident">QueryError</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">batch</span>::<span class="ident">Batch</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cql_to_rust</span>::<span class="ident">FromRow</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">response</span>::<span class="ident">cql_to_rust</span>::<span class="ident">FromRowError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">response</span>::<span class="ident">result</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">response</span>::<span class="ident">Response</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">prepared_statement</span>::<span class="ident">PreparedStatement</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">value</span>::{<span class="ident">BatchValues</span>, <span class="ident">SerializedValues</span>, <span class="ident">ValueList</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">prepared_statement</span>::{<span class="ident">PartitionKeyError</span>, <span class="ident">PreparedStatement</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">query</span>::<span class="ident">Query</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">routing</span>::{<span class="ident">murmur3_token</span>, <span class="ident">Node</span>, <span class="ident">Shard</span>, <span class="ident">ShardInfo</span>, <span class="ident">Token</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">connection</span>::{<span class="ident">open_connection</span>, <span class="ident">Connection</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">iterator</span>::<span class="ident">RowIterator</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">topology</span>::{<span class="ident">Topology</span>, <span class="ident">TopologyReader</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::<span class="ident">Compression</span>;
-
-<span class="kw">const</span> <span class="ident">POOL_LOCK_POISONED</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
-    <span class="string">&quot;Connection pool lock is poisoned, this session is no longer usable. \
-                                  Drop it and create a new one.&quot;</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">routing</span>::{<span class="ident">murmur3_token</span>, <span class="ident">Token</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transport</span>::{
+    <span class="ident">cluster</span>::<span class="ident">Cluster</span>,
+    <span class="ident">connection</span>::<span class="ident">ConnectionConfig</span>,
+    <span class="ident">iterator</span>::<span class="ident">RowIterator</span>,
+    <span class="ident">load_balancing</span>::{<span class="ident">LoadBalancingPolicy</span>, <span class="ident">RoundRobinPolicy</span>, <span class="ident">Statement</span>, <span class="ident">TokenAwarePolicy</span>},
+    <span class="ident">metrics</span>::{<span class="ident">Metrics</span>, <span class="ident">MetricsView</span>},
+    <span class="ident">node</span>::<span class="ident">Node</span>,
+    <span class="ident">Compression</span>,
+};
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Session</span> {
-    <span class="comment">// invariant: nonempty</span>
-    <span class="comment">// PLEASE DO NOT EXPOSE IT TO THE USER OR PEOPLE WILL DIE</span>
-    <span class="ident">pool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Node</span>, <span class="ident">NodePool</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">cluster</span>: <span class="ident">Cluster</span>,
+    <span class="ident">load_balancer</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">LoadBalancingPolicy</span><span class="op">&gt;</span>,
 
-    <span class="comment">// compression options passed to the session when it was created</span>
-    <span class="ident">compression</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Compression</span><span class="op">&gt;</span>,
-
-    <span class="ident">topology</span>: <span class="ident">Topology</span>,
-    <span class="ident">_topology_reader_handle</span>: <span class="ident">RemoteHandle</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
+    <span class="ident">metrics</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Metrics</span><span class="op">&gt;</span>,
 }
 
-<span class="comment">// Pool of connections for a single node.</span>
-<span class="comment">// Also stores the sharding info for this node if we have one.</span>
-<span class="comment">// If we&#39;re connecting using a non-shard-aware port, or connecting to Cassandra,</span>
-<span class="comment">// the pool will always have a single connection under shard 0</span>
-<span class="comment">// and the sharding info will be empty.</span>
-<span class="kw">struct</span> <span class="ident">NodePool</span> {
-    <span class="comment">// invariant: nonempty</span>
-    <span class="ident">connections</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Shard</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">shard_info</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShardInfo</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Configuration options for [`Session`].</span>
+<span class="doccomment">/// Can be created manually, but usually it&#39;s easier to use</span>
+<span class="doccomment">/// [SessionBuilder](super::session_builder::SessionBuilder)</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SessionConfig</span> {
+    <span class="doccomment">/// List of database servers known on Session startup.</span>
+    <span class="doccomment">/// Session will connect to these nodes to retrieve information about other nodes in the cluster.</span>
+    <span class="doccomment">/// Each node can be represented as a hostname or an IP address.</span>
+    <span class="kw">pub</span> <span class="ident">known_nodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">KnownNode</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// Preferred compression algorithm to use on connections.</span>
+    <span class="doccomment">/// If it&#39;s not supported by database server Session will fall back to no compression.</span>
+    <span class="kw">pub</span> <span class="ident">compression</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Compression</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">tcp_nodelay</span>: <span class="ident">bool</span>,
+
+    <span class="doccomment">/// Load balancing policy used by Session</span>
+    <span class="kw">pub</span> <span class="ident">load_balancing</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">LoadBalancingPolicy</span><span class="op">&gt;</span>,
+    <span class="comment">/*
+    These configuration options will be added in the future:
+
+    pub auth_username: Option&lt;String&gt;,
+    pub auth_password: Option&lt;String&gt;,
+
+    pub use_tls: bool,
+    pub tls_certificate_path: Option&lt;String&gt;,
+
+    pub tcp_keepalive: bool,
+
+    pub retry_policy: Option&lt;String&gt;,
+
+    pub default_consistency: Option&lt;String&gt;,
+    */</span>
+}
+
+<span class="doccomment">/// Describes database server known on Session startup.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">KnownNode</span> {
+    <span class="ident">Hostname</span>(<span class="ident">String</span>),
+    <span class="ident">Address</span>(<span class="ident">SocketAddr</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">SessionConfig</span> {
+    <span class="doccomment">/// Creates a [`SessionConfig`] with default configuration</span>
+    <span class="doccomment">/// # Default configuration</span>
+    <span class="doccomment">/// * Compression: None</span>
+    <span class="doccomment">/// * Load balancing policy: Token-aware Round-robin</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use scylla::SessionConfig;</span>
+    <span class="doccomment">/// let config = SessionConfig::new();</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">SessionConfig</span> {
+            <span class="ident">known_nodes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">compression</span>: <span class="prelude-val">None</span>,
+            <span class="ident">tcp_nodelay</span>: <span class="bool-val">false</span>,
+            <span class="ident">load_balancing</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TokenAwarePolicy</span>::<span class="ident">new</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">RoundRobinPolicy</span>::<span class="ident">new</span>()))),
+        }
+    }
+
+    <span class="doccomment">/// Adds a known database server with a hostname</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use scylla::SessionConfig;</span>
+    <span class="doccomment">/// let mut config = SessionConfig::new();</span>
+    <span class="doccomment">/// config.add_known_node(&quot;127.0.0.1:9042&quot;);</span>
+    <span class="doccomment">/// config.add_known_node(&quot;db1.example.com:9042&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_known_node</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">hostname</span>: <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">known_nodes</span>
+            .<span class="ident">push</span>(<span class="ident">KnownNode</span>::<span class="ident">Hostname</span>(<span class="ident">hostname</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()));
+    }
+
+    <span class="doccomment">/// Adds a known database server with an IP address</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use scylla::SessionConfig;</span>
+    <span class="doccomment">/// # use std::net::{SocketAddr, IpAddr, Ipv4Addr};</span>
+    <span class="doccomment">/// let mut config = SessionConfig::new();</span>
+    <span class="doccomment">/// config.add_known_node_addr(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 9042));</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_known_node_addr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node_addr</span>: <span class="ident">SocketAddr</span>) {
+        <span class="self">self</span>.<span class="ident">known_nodes</span>.<span class="ident">push</span>(<span class="ident">KnownNode</span>::<span class="ident">Address</span>(<span class="ident">node_addr</span>));
+    }
+
+    <span class="doccomment">/// Adds a list of known database server with hostnames</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use scylla::SessionConfig;</span>
+    <span class="doccomment">/// # use std::net::{SocketAddr, IpAddr, Ipv4Addr};</span>
+    <span class="doccomment">/// let mut config = SessionConfig::new();</span>
+    <span class="doccomment">/// config.add_known_nodes(&amp;[&quot;127.0.0.1:9042&quot;, &quot;db1.example.com&quot;]);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_known_nodes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">hostnames</span>: <span class="kw-2">&amp;</span>[<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>]) {
+        <span class="kw">for</span> <span class="ident">hostname</span> <span class="kw">in</span> <span class="ident">hostnames</span> {
+            <span class="self">self</span>.<span class="ident">add_known_node</span>(<span class="ident">hostname</span>);
+        }
+    }
+
+    <span class="doccomment">/// Adds a list of known database servers with IP addresses</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use scylla::SessionConfig;</span>
+    <span class="doccomment">/// # use std::net::{SocketAddr, IpAddr, Ipv4Addr};</span>
+    <span class="doccomment">/// let addr1 = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(172, 17, 0, 3)), 9042);</span>
+    <span class="doccomment">/// let addr2 = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(172, 17, 0, 4)), 9042);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let mut config = SessionConfig::new();</span>
+    <span class="doccomment">/// config.add_known_nodes_addr(&amp;[addr1, addr2]);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_known_nodes_addr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node_addrs</span>: <span class="kw-2">&amp;</span>[<span class="ident">SocketAddr</span>]) {
+        <span class="kw">for</span> <span class="ident">address</span> <span class="kw">in</span> <span class="ident">node_addrs</span> {
+            <span class="self">self</span>.<span class="ident">add_known_node_addr</span>(<span class="kw-2">*</span><span class="ident">address</span>);
+        }
+    }
+
+    <span class="doccomment">/// Makes a config that should be used in Connection</span>
+    <span class="kw">fn</span> <span class="ident">get_connection_config</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ConnectionConfig</span> {
+        <span class="ident">ConnectionConfig</span> {
+            <span class="ident">compression</span>: <span class="self">self</span>.<span class="ident">compression</span>,
+            <span class="ident">tcp_nodelay</span>: <span class="self">self</span>.<span class="ident">tcp_nodelay</span>,
+        }
+    }
+}
+
+<span class="doccomment">/// Creates default [`SessionConfig`], same as [`SessionConfig::new`]</span>
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SessionConfig</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span>::<span class="ident">new</span>()
+    }
 }
 
 <span class="comment">// Trait used to implement Vec&lt;result::Row&gt;::into_typed&lt;RowT&gt;(self)</span>
 <span class="comment">// This is the only way to add custom method to Vec</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoTypedRows</span> {
-    <span class="kw">fn</span> <span class="ident">into_typed</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TypedRowIter</span><span class="op">&lt;</span><span class="ident">RowT</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">into_typed</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TypedRowIter</span><span class="op">&lt;</span><span class="ident">RowT</span><span class="op">&gt;</span>;
 }
 
 <span class="comment">// Adds method Vec&lt;result::Row&gt;::into_typed&lt;RowT&gt;(self)</span>
 <span class="comment">// It transforms the Vec into iterator mapping to custom row type</span>
 <span class="kw">impl</span> <span class="ident">IntoTypedRows</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">into_typed</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TypedRowIter</span><span class="op">&lt;</span><span class="ident">RowT</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">into_typed</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TypedRowIter</span><span class="op">&lt;</span><span class="ident">RowT</span><span class="op">&gt;</span> {
         <span class="ident">TypedRowIter</span> {
             <span class="ident">row_iter</span>: <span class="self">self</span>.<span class="ident">into_iter</span>(),
             <span class="ident">phantom_data</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
@@ -499,7 +728,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RowT</span>: <span class="ident">FromRow</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">TypedRowIter</span><span class="op">&lt;</span><span class="ident">RowT</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RowT</span>, <span class="ident">FromRowError</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Item</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Item</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">row_iter</span>.<span class="ident">next</span>().<span class="ident">map</span>(<span class="ident">RowT</span>::<span class="ident">from_row</span>)
     }
 }
@@ -507,36 +736,42 @@
 <span class="doccomment">/// Represents a CQL session, which can be used to communicate</span>
 <span class="doccomment">/// with the database</span>
 <span class="kw">impl</span> <span class="ident">Session</span> {
-    <span class="comment">// FIXME: Use ToSocketAddrs instead of SocketAddr in public interfaces</span>
     <span class="comment">// because it&#39;s more convenient</span>
     <span class="doccomment">/// Estabilishes a CQL session with the database</span>
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// * `addr` - address of the server</span>
-    <span class="doccomment">/// * `compression` - optional compression settings</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span>(
-        <span class="ident">addr</span>: <span class="kw">impl</span> <span class="ident">ToSocketAddrs</span> <span class="op">+</span> <span class="ident">Display</span>,
-        <span class="ident">compression</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Compression</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">resolve</span>(<span class="ident">addr</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">open_connection</span>(<span class="ident">addr</span>, <span class="prelude-val">None</span>, <span class="ident">compression</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">Node</span> { <span class="ident">addr</span> };
+    <span class="doccomment">/// * `config` - Connectiong configuration - known nodes, Compression, etc.</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span>(<span class="ident">config</span>: <span class="ident">SessionConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">NewSessionError</span><span class="op">&gt;</span> {
+        <span class="comment">// Ensure there is at least one known node</span>
+        <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">known_nodes</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">NewSessionError</span>::<span class="ident">EmptyKnownNodesList</span>);
+        }
 
-        <span class="kw">let</span> (<span class="ident">topology_reader</span>, <span class="ident">topology</span>) <span class="op">=</span> <span class="ident">TopologyReader</span>::<span class="ident">new</span>(<span class="ident">node</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let</span> (<span class="ident">fut</span>, <span class="ident">_topology_reader_handle</span>) <span class="op">=</span> <span class="ident">topology_reader</span>.<span class="ident">run</span>().<span class="ident">remote_handle</span>();
-        <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="ident">fut</span>);
+        <span class="comment">// Find IP addresses of all known nodes passed in the config</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">node_addresses</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">config</span>.<span class="ident">known_nodes</span>.<span class="ident">len</span>());
 
-        <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="ident">node</span>, <span class="ident">NodePool</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">connection</span>)))]
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">collect</span>(),
-        ));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">to_resolve</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+
+        <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">known_nodes</span> {
+            <span class="kw">match</span> <span class="ident">node</span> {
+                <span class="ident">KnownNode</span>::<span class="ident">Hostname</span>(<span class="ident">hostname</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">to_resolve</span>.<span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="ident">hostname</span>),
+                <span class="ident">KnownNode</span>::<span class="ident">Address</span>(<span class="ident">address</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">node_addresses</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">address</span>),
+            };
+        }
+
+        <span class="kw">let</span> <span class="ident">resolve_futures</span> <span class="op">=</span> <span class="ident">to_resolve</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">resolve_hostname</span>);
+        <span class="kw">let</span> <span class="ident">resolved</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">futures</span>::<span class="ident">future</span>::<span class="ident">try_join_all</span>(<span class="ident">resolve_futures</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="ident">node_addresses</span>.<span class="ident">extend</span>(<span class="ident">resolved</span>);
+
+        <span class="comment">// Start the session</span>
+        <span class="kw">let</span> <span class="ident">cluster</span> <span class="op">=</span> <span class="ident">Cluster</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">node_addresses</span>, <span class="ident">config</span>.<span class="ident">get_connection_config</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Metrics</span>::<span class="ident">new</span>());
 
         <span class="prelude-val">Ok</span>(<span class="ident">Session</span> {
-            <span class="ident">pool</span>,
-            <span class="ident">compression</span>,
-            <span class="ident">topology</span>,
-            <span class="ident">_topology_reader_handle</span>,
+            <span class="ident">cluster</span>,
+            <span class="ident">load_balancer</span>: <span class="ident">config</span>.<span class="ident">load_balancing</span>,
+            <span class="ident">metrics</span>,
         })
     }
 
@@ -553,18 +788,53 @@
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">query</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Query</span><span class="op">&gt;</span>,
-        <span class="ident">values</span>: <span class="kw-2">&amp;</span>[<span class="ident">Value</span>],
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">any_connection</span>()<span class="question-mark">?</span>
+        <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">ValueList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
+        <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">inc_total_nonpaged_queries</span>();
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">query_no_metrics</span>(<span class="ident">query</span>, <span class="ident">values</span>).<span class="kw">await</span>;
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">result</span> {
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">log_latency</span>(<span class="ident">now</span>.<span class="ident">elapsed</span>().<span class="ident">as_millis</span>() <span class="kw">as</span> <span class="ident">u64</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">inc_failed_nonpaged_queries</span>(),
+        };
+        <span class="ident">result</span>
+    }
+
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_no_metrics</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">query</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Query</span><span class="op">&gt;</span>,
+        <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">ValueList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">statement_info</span> <span class="op">=</span> <span class="ident">Statement</span> {
+            <span class="ident">token</span>: <span class="prelude-val">None</span>,
+            <span class="ident">keyspace</span>: <span class="prelude-val">None</span>,
+        };
+        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_balancing_plan</span>(<span class="ident">statement_info</span>);
+
+        <span class="ident">node</span>.<span class="ident">random_connection</span>()
+            .<span class="kw">await</span><span class="question-mark">?</span>
             .<span class="ident">query_single_page</span>(<span class="ident">query</span>, <span class="ident">values</span>)
             .<span class="kw">await</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query_iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">query</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Query</span><span class="op">&gt;</span>, <span class="ident">values</span>: <span class="kw-2">&amp;</span>[<span class="ident">Value</span>]) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RowIterator</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_iter</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">query</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Query</span><span class="op">&gt;</span>,
+        <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">ValueList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RowIterator</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">serialized_values</span> <span class="op">=</span> <span class="ident">values</span>.<span class="ident">serialized</span>()<span class="question-mark">?</span>;
+
+        <span class="kw">let</span> <span class="ident">statement_info</span> <span class="op">=</span> <span class="ident">Statement</span> {
+            <span class="ident">token</span>: <span class="prelude-val">None</span>,
+            <span class="ident">keyspace</span>: <span class="prelude-val">None</span>,
+        };
+        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_balancing_plan</span>(<span class="ident">statement_info</span>);
+
         <span class="prelude-val">Ok</span>(<span class="ident">RowIterator</span>::<span class="ident">new_for_query</span>(
-            <span class="self">self</span>.<span class="ident">any_connection</span>()<span class="question-mark">?</span>,
+            <span class="ident">node</span>.<span class="ident">random_connection</span>().<span class="kw">await</span><span class="question-mark">?</span>,
             <span class="ident">query</span>.<span class="ident">into</span>(),
-            <span class="ident">values</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">serialized_values</span>.<span class="ident">into_owned</span>(),
+            <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">clone</span>(),
         ))
     }
 
@@ -572,275 +842,227 @@
     <span class="doccomment">/// which can later be used to perform more efficient queries</span>
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///#</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">prepare</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">query</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PreparedStatement</span><span class="op">&gt;</span> {
-        <span class="comment">// FIXME: Prepared statement ids are local to a node, so we must make sure</span>
-        <span class="comment">// that prepare() sends to all nodes and keeps all ids.</span>
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">any_connection</span>()<span class="question-mark">?</span>.<span class="ident">prepare</span>(<span class="ident">query</span>.<span class="ident">to_owned</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
-            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="ident">Prepared</span>(<span class="ident">p</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">PreparedStatement</span>::<span class="ident">new</span>(
-                <span class="ident">p</span>.<span class="ident">id</span>,
-                <span class="ident">p</span>.<span class="ident">prepared_metadata</span>,
-                <span class="ident">query</span>.<span class="ident">to_owned</span>(),
-            )),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Unexpected frame received&quot;</span>)),
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">prepare</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">query</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PreparedStatement</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">connections</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">get_working_connections</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="comment">// Prepare statements on all connections concurrently</span>
+        <span class="kw">let</span> <span class="ident">handles</span> <span class="op">=</span> <span class="ident">connections</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">prepare</span>(<span class="ident">query</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">join_all</span>(<span class="ident">handles</span>).<span class="kw">await</span>;
+
+        <span class="comment">// If at least one prepare was succesfull prepare returns Ok</span>
+
+        <span class="comment">// Find first result that is Ok, or Err if all failed</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">first_ok</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PreparedStatement</span>, <span class="ident">QueryError</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">res</span>) <span class="op">=</span> <span class="ident">results</span>.<span class="ident">pop</span>() {
+            <span class="kw">let</span> <span class="ident">is_ok</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">is_ok</span>();
+
+            <span class="ident">first_ok</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">res</span>);
+
+            <span class="kw">if</span> <span class="ident">is_ok</span> {
+                <span class="kw">break</span>;
+            }
         }
+
+        <span class="kw">let</span> <span class="ident">prepared</span>: <span class="ident">PreparedStatement</span> <span class="op">=</span> <span class="ident">first_ok</span>.<span class="ident">unwrap</span>()<span class="question-mark">?</span>;
+
+        <span class="comment">// Validate prepared ids equality</span>
+        <span class="kw">for</span> <span class="ident">res</span> <span class="kw">in</span> <span class="ident">results</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">statement</span>) <span class="op">=</span> <span class="ident">res</span> {
+                <span class="kw">if</span> <span class="ident">prepared</span>.<span class="ident">get_id</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">statement</span>.<span class="ident">get_id</span>() {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                        <span class="string">&quot;Prepared statement Ids differ, all should be equal&quot;</span>,
+                    ));
+                }
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="ident">prepared</span>)
     }
 
     <span class="doccomment">/// Executes a previously prepared statement</span>
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// * `prepared` - a statement prepared with [prepare](crate::transport::session::prepare)</span>
+    <span class="doccomment">/// * `prepared` - a statement prepared with [prepare](crate::transport::session::Session::prepare)</span>
     <span class="doccomment">/// * `values` - values bound to the query</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">execute</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">prepared</span>: <span class="kw-2">&amp;</span><span class="ident">PreparedStatement</span>,
-        <span class="ident">values</span>: <span class="kw-2">&amp;</span>[<span class="ident">Value</span>],
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">ValueList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
+        <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">inc_total_nonpaged_queries</span>();
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">execute_no_metrics</span>(<span class="ident">prepared</span>, <span class="ident">values</span>).<span class="kw">await</span>;
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">result</span> {
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">log_latency</span>(<span class="ident">now</span>.<span class="ident">elapsed</span>().<span class="ident">as_millis</span>() <span class="kw">as</span> <span class="ident">u64</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">inc_failed_nonpaged_queries</span>(),
+        };
+        <span class="ident">result</span>
+    }
+
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">execute_no_metrics</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">prepared</span>: <span class="kw-2">&amp;</span><span class="ident">PreparedStatement</span>,
+        <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">ValueList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">result</span>::<span class="ident">Row</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
         <span class="comment">// FIXME: Prepared statement ids are local to a node, so we must make sure</span>
         <span class="comment">// that prepare() sends to all nodes and keeps all ids.</span>
-        <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">calculate_token</span>(<span class="ident">prepared</span>, <span class="ident">values</span>);
-        <span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pick_connection</span>(<span class="ident">token</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">connection</span>.<span class="ident">execute</span>(<span class="ident">prepared</span>, <span class="ident">values</span>, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">serialized_values</span> <span class="op">=</span> <span class="ident">values</span>.<span class="ident">serialized</span>()<span class="question-mark">?</span>;
+
+        <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">calculate_token</span>(<span class="ident">prepared</span>, <span class="kw-2">&amp;</span><span class="ident">serialized_values</span>)<span class="question-mark">?</span>;
+
+        <span class="kw">let</span> <span class="ident">statement_info</span> <span class="op">=</span> <span class="ident">Statement</span> {
+            <span class="ident">token</span>: <span class="prelude-val">Some</span>(<span class="ident">token</span>),
+            <span class="ident">keyspace</span>: <span class="prelude-val">None</span>,
+        };
+        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_balancing_plan</span>(<span class="ident">statement_info</span>);
+
+        <span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">connection_for_token</span>(<span class="ident">token</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">connection</span>
+            .<span class="ident">execute</span>(<span class="ident">prepared</span>, <span class="kw-2">&amp;</span><span class="ident">serialized_values</span>, <span class="prelude-val">None</span>)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
+            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="ident">err</span>.<span class="ident">code</span> {
-                    <span class="number">9472</span> <span class="op">=&gt;</span> {
+                    <span class="number">9472</span> <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="comment">// Repreparation of a statement is needed</span>
-                        <span class="kw">let</span> <span class="ident">reprepared_result</span> <span class="op">=</span> <span class="ident">connection</span>
-                            .<span class="ident">prepare</span>(<span class="ident">prepared</span>.<span class="ident">get_statement</span>().<span class="ident">to_owned</span>())
-                            .<span class="kw">await</span><span class="question-mark">?</span>;
+                        <span class="kw">let</span> <span class="ident">reprepared</span> <span class="op">=</span> <span class="ident">connection</span>.<span class="ident">prepare</span>(<span class="ident">prepared</span>.<span class="ident">get_statement</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
                         <span class="comment">// Reprepared statement should keep its id - it&#39;s the md5 sum</span>
                         <span class="comment">// of statement contents</span>
-                        <span class="kw">match</span> <span class="ident">reprepared_result</span> {
-                            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
-                            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="ident">Prepared</span>(<span class="ident">reprepared</span>)) <span class="op">=&gt;</span> {
-                                <span class="kw">if</span> <span class="ident">reprepared</span>.<span class="ident">id</span> <span class="op">!=</span> <span class="ident">prepared</span>.<span class="ident">get_id</span>() {
-                                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(
-                                        <span class="string">&quot;Reprepared statement unexpectedly changed its id&quot;</span>
-                                    ));
-                                }
-                            }
-                            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Unexpected frame received&quot;</span>)),
+                        <span class="kw">if</span> <span class="ident">reprepared</span>.<span class="ident">get_id</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">prepared</span>.<span class="ident">get_id</span>() {
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                                <span class="string">&quot;Prepared statement Id changed, md5 sum should stay the same&quot;</span>,
+                            ));
                         }
-                        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">connection</span>.<span class="ident">execute</span>(<span class="ident">prepared</span>, <span class="ident">values</span>, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+                        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">connection</span>
+                            .<span class="ident">execute</span>(<span class="ident">prepared</span>, <span class="kw-2">&amp;</span><span class="ident">serialized_values</span>, <span class="prelude-val">None</span>)
+                            .<span class="kw">await</span><span class="question-mark">?</span>;
                         <span class="kw">match</span> <span class="ident">result</span> {
-                            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
-                            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="ident">Rows</span>(<span class="ident">rs</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">rs</span>.<span class="ident">rows</span>)),
-                            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-                            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Unexpected frame received&quot;</span>)),
+                            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
+                            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="ident">Rows</span>(<span class="ident">rs</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">rs</span>.<span class="ident">rows</span>)),
+                            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+                            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                                <span class="string">&quot;EXECUTE: Unexpected server response&quot;</span>,
+                            )),
                         }
                     }
-                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
                 }
             }
-            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="ident">Rows</span>(<span class="ident">rs</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">rs</span>.<span class="ident">rows</span>)),
-            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;Unexpected frame received&quot;</span>)),
+            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="ident">Rows</span>(<span class="ident">rs</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">rs</span>.<span class="ident">rows</span>)),
+            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                <span class="string">&quot;EXECUTE: Unexpected server response&quot;</span>,
+            )),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute_iter</span>(
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">execute_iter</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">prepared</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PreparedStatement</span><span class="op">&gt;</span>,
-        <span class="ident">values</span>: <span class="kw-2">&amp;</span>[<span class="ident">Value</span>],
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RowIterator</span><span class="op">&gt;</span> {
+        <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">ValueList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RowIterator</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">serialized_values</span> <span class="op">=</span> <span class="ident">values</span>.<span class="ident">serialized</span>()<span class="question-mark">?</span>;
+
+        <span class="kw">let</span> <span class="ident">statement_info</span> <span class="op">=</span> <span class="ident">Statement</span> {
+            <span class="ident">token</span>: <span class="prelude-val">None</span>,
+            <span class="ident">keyspace</span>: <span class="prelude-val">None</span>,
+        };
+        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_balancing_plan</span>(<span class="ident">statement_info</span>);
+
         <span class="prelude-val">Ok</span>(<span class="ident">RowIterator</span>::<span class="ident">new_for_prepared_statement</span>(
-            <span class="self">self</span>.<span class="ident">any_connection</span>()<span class="question-mark">?</span>,
+            <span class="ident">node</span>.<span class="ident">random_connection</span>().<span class="kw">await</span><span class="question-mark">?</span>,
             <span class="ident">prepared</span>.<span class="ident">into</span>(),
-            <span class="ident">values</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">serialized_values</span>.<span class="ident">into_owned</span>(),
+            <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">clone</span>(),
         ))
     }
 
-    <span class="doccomment">/// Returns all connections that the session has currently opened.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_connections</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Node</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span>)<span class="op">&gt;&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>
-            .<span class="ident">pool</span>
-            .<span class="ident">read</span>()
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">POOL_LOCK_POISONED</span>))<span class="question-mark">?</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="ident">node_pool</span>)<span class="op">|</span> (<span class="ident">node</span>, <span class="ident">node_pool</span>.<span class="ident">get_connections</span>()))
-            .<span class="ident">collect</span>())
-    }
-
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">refresh_topology</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">topology</span>.<span class="ident">refresh</span>().<span class="kw">await</span>
-    }
-
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">pick_connection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Token</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span> {
-        <span class="comment">// TODO: we try only the owner of the range (vnode) that the token lies in</span>
-        <span class="comment">// we should calculate the *set* of replicas for this token, using the replication strategy</span>
-        <span class="comment">// of the table being queried.</span>
-        <span class="kw">let</span> <span class="ident">owner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">topology</span>.<span class="ident">read_ring</span>()<span class="question-mark">?</span>.<span class="ident">owner</span>(<span class="ident">t</span>);
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">found_pool</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shard_info</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">node_pool</span>) <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">pool</span>
-            .<span class="ident">read</span>()
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">POOL_LOCK_POISONED</span>))<span class="question-mark">?</span>
-            .<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">owner</span>)
-        {
-            <span class="comment">// We have a pool for this node. Check if we have a connection for the token.</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="ident">node_pool</span>.<span class="ident">connection_for_token</span>(<span class="ident">t</span>) {
-                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">c</span>);
-            }
-
-            <span class="ident">found_pool</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            <span class="ident">shard_info</span> <span class="op">=</span> <span class="ident">node_pool</span>.<span class="ident">get_shard_info</span>().<span class="ident">cloned</span>();
+    <span class="doccomment">/// Sends a batch to the database.</span>
+    <span class="doccomment">/// # Arguments</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// * `batch` - batch to be performed</span>
+    <span class="doccomment">/// * `values` - values bound to the query</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">batch</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">batch</span>: <span class="kw-2">&amp;</span><span class="ident">Batch</span>, <span class="ident">values</span>: <span class="kw">impl</span> <span class="ident">BatchValues</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="comment">// FIXME: Prepared statement ids are local to a node</span>
+        <span class="comment">// this method does not handle this</span>
+        <span class="kw">let</span> <span class="ident">statement_info</span> <span class="op">=</span> <span class="ident">Statement</span> {
+            <span class="ident">token</span>: <span class="prelude-val">None</span>,
+            <span class="ident">keyspace</span>: <span class="prelude-val">None</span>,
         };
+        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_balancing_plan</span>(<span class="ident">statement_info</span>);
 
-        <span class="comment">// We can&#39;t put this block in `else` for the previous if statement, because the block</span>
-        <span class="comment">// prolongs the lifetime of the read guard from `self.pool.read()`.</span>
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">found_pool</span> {
-            <span class="comment">// We don&#39;t even have a pool for this node; in particular, we don&#39;t know its</span>
-            <span class="comment">// sharding info. We will just connect to a random shard this time so we don&#39;t do</span>
-            <span class="comment">// too much work on the query path (and we might still get lucky).</span>
-            <span class="comment">// The next request using this node&#39;s pool will pick the right connection, creating</span>
-            <span class="comment">// it if necessary.</span>
-            <span class="kw">let</span> <span class="ident">new_conn</span> <span class="op">=</span> <span class="ident">open_connection</span>(<span class="ident">owner</span>.<span class="ident">addr</span>, <span class="prelude-val">None</span>, <span class="self">self</span>.<span class="ident">compression</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">new_node_pool</span> <span class="op">=</span> <span class="ident">NodePool</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">new_conn</span>));
-
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="self">self</span>
-                .<span class="ident">pool</span>
-                .<span class="ident">write</span>()
-                .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">POOL_LOCK_POISONED</span>))<span class="question-mark">?</span>
-                .<span class="ident">entry</span>(<span class="ident">owner</span>)
-                <span class="comment">// If someone created a node pool for this node faster while we were creating</span>
-                <span class="comment">// our own and inserted it into the session pool, drop our new pool and use the</span>
-                <span class="comment">// existing one.</span>
-                <span class="comment">// From this existing pool we will take any connection if there is no</span>
-                <span class="comment">// connection for this token yet.</span>
-                .<span class="ident">or_insert</span>(<span class="ident">new_node_pool</span>)
-                .<span class="ident">connection_for_token_or_any</span>(<span class="ident">t</span>)<span class="question-mark">?</span>);
-        };
-
-        <span class="comment">// We had a pool for this node, but there was no connection for this token in that pool.</span>
-        <span class="comment">// Let&#39;s create one.</span>
-        <span class="comment">// TODO: don&#39;t do this on the query path, but concurrently in some other fiber?</span>
-        <span class="comment">// Take any connection if there is no good connection for this node yet?</span>
-        <span class="comment">// TODO: opening this connection may actually fail because the port is already in</span>
-        <span class="comment">// use. We should try binding to a couple of ports before we fail. For that we need</span>
-        <span class="comment">// open_connection to return a well-typed error so we can check if it was an AddrInUse</span>
-        <span class="comment">// error. Or refactor this whole thing.</span>
-        <span class="kw">let</span> <span class="ident">new_conn_source_port</span> <span class="op">=</span> <span class="ident">shard_info</span>
-            .<span class="ident">as_ref</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">draw_source_port_for_token</span>(<span class="ident">t</span>));
-        <span class="kw">let</span> <span class="ident">new_conn</span> <span class="op">=</span>
-            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">open_connection</span>(<span class="ident">owner</span>.<span class="ident">addr</span>, <span class="ident">new_conn_source_port</span>, <span class="self">self</span>.<span class="ident">compression</span>).<span class="kw">await</span><span class="question-mark">?</span>);
-
-        <span class="prelude-val">Ok</span>(
-            <span class="kw">match</span> <span class="self">self</span>
-                .<span class="ident">pool</span>
-                .<span class="ident">write</span>()
-                .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">POOL_LOCK_POISONED</span>))<span class="question-mark">?</span>
-                .<span class="ident">entry</span>(<span class="ident">owner</span>)
-            {
-                <span class="ident">Entry</span>::<span class="ident">Vacant</span>(<span class="ident">entry</span>) <span class="op">=&gt;</span> {
-                    <span class="ident">entry</span>.<span class="ident">insert</span>(<span class="ident">NodePool</span>::<span class="ident">new</span>(<span class="ident">new_conn</span>.<span class="ident">clone</span>()));
-                    <span class="ident">new_conn</span>
-                }
-                <span class="ident">Entry</span>::<span class="ident">Occupied</span>(<span class="kw-2">mut</span> <span class="ident">entry</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">node_pool</span> <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">get_mut</span>();
-                    <span class="kw">if</span> <span class="ident">shard_info</span>.<span class="ident">as_ref</span>() <span class="op">!=</span> <span class="ident">node_pool</span>.<span class="ident">get_shard_info</span>() {
-                        <span class="comment">// The node has resharded while we were creating the connection.</span>
-                        <span class="comment">// Take any connection.</span>
-                        <span class="kw">return</span> <span class="ident">node_pool</span>.<span class="ident">connection_for_token_or_any</span>(<span class="ident">t</span>);
-                    }
-
-                    <span class="kw">let</span> <span class="ident">shard</span> <span class="op">=</span> <span class="ident">node_pool</span>.<span class="ident">shard_for_token</span>(<span class="ident">t</span>);
-                    <span class="ident">node_pool</span>.<span class="ident">or_insert</span>(<span class="ident">shard</span>, <span class="ident">new_conn</span>)
-                }
-            },
-        )
-    }
-
-    <span class="kw">fn</span> <span class="ident">any_connection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>
-            .<span class="ident">pool</span>
-            .<span class="ident">read</span>()
-            <span class="comment">// TODO: better error message?</span>
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="ident">POOL_LOCK_POISONED</span>))<span class="question-mark">?</span>
-            .<span class="ident">values</span>()
-            .<span class="ident">next</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;fatal error, broken invariant: no connections available&quot;</span>))<span class="question-mark">?</span>
-            .<span class="ident">any_connection</span>()<span class="question-mark">?</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">NodePool</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">connection</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> (<span class="ident">shard</span>, <span class="ident">shard_info</span>) <span class="op">=</span>
-            <span class="kw">match</span> (<span class="ident">connection</span>.<span class="ident">get_shard_info</span>(), <span class="ident">connection</span>.<span class="ident">get_is_shard_aware</span>()) {
-                (<span class="prelude-val">Some</span>(<span class="ident">info</span>), <span class="bool-val">true</span>) <span class="op">=&gt;</span> (
-                    <span class="ident">info</span>.<span class="ident">shard_of_source_port</span>(<span class="ident">connection</span>.<span class="ident">get_source_port</span>()),
-                    <span class="prelude-val">Some</span>(<span class="ident">info</span>.<span class="ident">to_owned</span>()),
-                ),
-                <span class="kw">_</span> <span class="op">=&gt;</span> (<span class="number">0</span>, <span class="prelude-val">None</span>),
-            };
-
-        <span class="self">Self</span> {
-            <span class="ident">connections</span>: <span class="macro">vec</span><span class="macro">!</span>[(<span class="ident">shard</span>, <span class="ident">connection</span>)].<span class="ident">into_iter</span>().<span class="ident">collect</span>(),
-            <span class="ident">shard_info</span>,
+        <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">node</span>
+            .<span class="ident">random_connection</span>()
+            .<span class="kw">await</span><span class="question-mark">?</span>
+            .<span class="ident">batch</span>(<span class="kw-2">&amp;</span><span class="ident">batch</span>, <span class="ident">values</span>)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">match</span> <span class="ident">response</span> {
+            <span class="ident">Response</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
+            <span class="ident">Response</span>::<span class="prelude-ty">Result</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                <span class="string">&quot;BATCH: Unexpected server response&quot;</span>,
+            )),
         }
     }
 
-    <span class="doccomment">/// Returns all connections that the session has currently opened.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_connections</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span> {
-        <span class="self">self</span>.<span class="ident">connections</span>
-            .<span class="ident">values</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">conn</span><span class="op">|</span> <span class="ident">conn</span>.<span class="ident">to_owned</span>())
-            .<span class="ident">collect</span>()
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">refresh_topology</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">QueryError</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">refresh_topology</span>().<span class="kw">await</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_shard_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ShardInfo</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">shard_info</span>.<span class="ident">as_ref</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_metrics</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MetricsView</span> {
+        <span class="ident">MetricsView</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">clone</span>())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shard_for_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Token</span>) <span class="op">-&gt;</span> <span class="ident">Shard</span> {
-        <span class="self">self</span>.<span class="ident">shard_info</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">shard_of</span>(<span class="ident">t</span>))
+    <span class="kw">fn</span> <span class="ident">log_latency</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">latency</span>: <span class="ident">u64</span>) {
+        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span> <span class="comment">// silent fail if mutex is poisoned</span>
+            .<span class="ident">metrics</span>
+            .<span class="ident">log_query_latency</span>(<span class="ident">latency</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connection_for_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Token</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">let</span> <span class="ident">shard</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">shard_for_token</span>(<span class="ident">t</span>);
-        <span class="self">self</span>.<span class="ident">connections</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">shard</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">to_owned</span>())
-    }
+    <span class="kw">fn</span> <span class="ident">load_balancing_plan</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">statement_info</span>: <span class="ident">Statement</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cluster_info</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">get_data</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plan</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_balancer</span>.<span class="ident">plan</span>(<span class="kw-2">&amp;</span><span class="ident">statement_info</span>, <span class="kw-2">&amp;</span><span class="ident">cluster_info</span>);
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connection_for_token_or_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Token</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span> {
-        <span class="self">self</span>.<span class="ident">connection_for_token</span>(<span class="ident">t</span>)
-            .<span class="ident">map_or_else</span>(<span class="op">||</span> <span class="self">self</span>.<span class="ident">any_connection</span>(), <span class="prelude-val">Ok</span>)
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">any_connection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>
-            .<span class="ident">connections</span>
-            .<span class="ident">values</span>()
-            .<span class="ident">next</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;fatal error, broken invariant: no connections available&quot;</span>))<span class="question-mark">?</span>
-            .<span class="ident">to_owned</span>())
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">or_insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">shard</span>: <span class="ident">Shard</span>, <span class="ident">conn</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">connections</span>.<span class="ident">entry</span>(<span class="ident">shard</span>).<span class="ident">or_insert</span>(<span class="ident">conn</span>).<span class="ident">to_owned</span>()
+        <span class="ident">plan</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>() <span class="comment">// Plan returned by load balancing policies should never be empty</span>
     }
 }
 
-<span class="kw">fn</span> <span class="ident">calculate_token</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">stmt</span>: <span class="kw-2">&amp;</span><span class="ident">PreparedStatement</span>, <span class="ident">values</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">Value</span>]) <span class="op">-&gt;</span> <span class="ident">Token</span> {
+<span class="kw">fn</span> <span class="ident">calculate_token</span>(
+    <span class="ident">stmt</span>: <span class="kw-2">&amp;</span><span class="ident">PreparedStatement</span>,
+    <span class="ident">values</span>: <span class="kw-2">&amp;</span><span class="ident">SerializedValues</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Token</span>, <span class="ident">QueryError</span><span class="op">&gt;</span> {
     <span class="comment">// TODO: take the partitioner of the table that is being queried and calculate the token using</span>
     <span class="comment">// that partitioner. The below logic gives correct token only for murmur3partitioner</span>
-    <span class="ident">murmur3_token</span>(<span class="ident">stmt</span>.<span class="ident">compute_partition_key</span>(<span class="ident">values</span>))
+    <span class="kw">let</span> <span class="ident">partition_key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">stmt</span>.<span class="ident">compute_partition_key</span>(<span class="ident">values</span>) {
+        <span class="prelude-val">Ok</span>(<span class="ident">key</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">key</span>,
+        <span class="prelude-val">Err</span>(<span class="ident">PartitionKeyError</span>::<span class="ident">NoPkIndexValue</span>(<span class="kw">_</span>, <span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">ProtocolError</span>(
+                <span class="string">&quot;No pk indexes - can&#39;t calculate token&quot;</span>,
+            ))
+        }
+        <span class="prelude-val">Err</span>(<span class="ident">PartitionKeyError</span>::<span class="ident">ValueTooLong</span>(<span class="ident">values_len</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">QueryError</span>::<span class="ident">BadQuery</span>(<span class="ident">BadQuery</span>::<span class="ident">ValuesTooLongForKey</span>(
+                <span class="ident">values_len</span>,
+                <span class="ident">u16</span>::<span class="ident">max_value</span>().<span class="ident">into</span>(),
+            )))
+        }
+    };
+
+    <span class="prelude-val">Ok</span>(<span class="ident">murmur3_token</span>(<span class="ident">partition_key</span>))
 }
 
-<span class="comment">// Resolve the given `ToSocketAddrs` using a DNS lookup if necessary.</span>
+<span class="comment">// Resolve the given hostname using a DNS lookup if necessary.</span>
 <span class="comment">// The resolution may return multiple IPs and the function returns one of them.</span>
 <span class="comment">// It prefers to return IPv4s first, and only if there are none, IPv6s.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="ident">addr</span>: <span class="kw">impl</span> <span class="ident">ToSocketAddrs</span> <span class="op">+</span> <span class="ident">Display</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">failed_err</span> <span class="op">=</span> <span class="macro">anyhow</span><span class="macro">!</span>(<span class="string">&quot;failed to resolve {}&quot;</span>, <span class="ident">addr</span>);
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">resolve_hostname</span>(<span class="ident">hostname</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SocketAddr</span>, <span class="ident">NewSessionError</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">failed_err</span> <span class="op">=</span> <span class="ident">NewSessionError</span>::<span class="ident">FailedToResolveAddress</span>(<span class="ident">hostname</span>.<span class="ident">to_string</span>());
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-    <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">lookup_host</span>(<span class="ident">addr</span>).<span class="kw">await</span><span class="question-mark">?</span> {
+    <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">lookup_host</span>(<span class="ident">hostname</span>).<span class="kw">await</span><span class="question-mark">?</span> {
         <span class="kw">match</span> <span class="ident">a</span> {
-            <span class="ident">SocketAddr</span>::<span class="ident">V4</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">a</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> {
+            <span class="ident">SocketAddr</span>::<span class="ident">V4</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">a</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">ret</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">a</span>);
             }
         }

@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-0.3.3/src/util/slab.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>slab.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/sarna/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.1.1/src/util/slab.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>slab.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -900,7 +902,7 @@
 <span class="doccomment">///</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Slab</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Array of pages. Each page is synchronized.</span>
-    <span class="ident">pages</span>: [<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="ident">NUM_PAGES</span>],
+    <span class="ident">pages</span>: [<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>; <span class="ident">NUM_PAGES</span>],
 
     <span class="doccomment">/// Caches the array pointer &amp; number of initialized slots.</span>
     <span class="ident">cached</span>: [<span class="ident">CachedPage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="ident">NUM_PAGES</span>],
@@ -912,7 +914,7 @@
     <span class="doccomment">/// following page has double the capacity of the previous page.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Each returned `Ref` holds a reference count to this `Arc`.</span>
-    <span class="ident">pages</span>: [<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="ident">NUM_PAGES</span>],
+    <span class="ident">pages</span>: [<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>; <span class="ident">NUM_PAGES</span>],
 }
 
 <span class="doccomment">/// References a slot in the slab. Indexing a slot using an `Address` is memory</span>
@@ -947,7 +949,7 @@
 <span class="doccomment">/// A page in the slab</span>
 <span class="kw">struct</span> <span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Slots</span>
-    <span class="ident">slots</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">Slots</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">slots</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">Slots</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="comment">// Number of slots currently being used. This is not guaranteed to be up to</span>
     <span class="comment">// date and should only be used as a hint.</span>
@@ -974,7 +976,7 @@
 <span class="doccomment">/// Page state</span>
 <span class="kw">struct</span> <span class="ident">Slots</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Slots</span>
-    <span class="ident">slots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Slot</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">slots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Slot</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="ident">head</span>: <span class="ident">usize</span>,
 
@@ -996,7 +998,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">struct</span> <span class="ident">Slot</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Pointed to by `Ref`.</span>
-    <span class="ident">value</span>: <span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">value</span>: <span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Next entry in the free list.</span>
     <span class="ident">next</span>: <span class="ident">u32</span>,
@@ -1015,7 +1017,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Slab</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a new, empty, slab</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Slab</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Slab</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="comment">// Initializing arrays is a bit annoying. Instead of manually writing</span>
         <span class="comment">// out an array and every single entry, `Default::default()` is used to</span>
         <span class="comment">// initialize the array, then the array is iterated and each value is</span>
@@ -1032,12 +1034,12 @@
             <span class="kw">let</span> <span class="ident">page</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">get_mut</span>(<span class="ident">page</span>).<span class="ident">unwrap</span>();
             <span class="ident">page</span>.<span class="ident">len</span> <span class="op">=</span> <span class="ident">len</span>;
             <span class="ident">page</span>.<span class="ident">prev_len</span> <span class="op">=</span> <span class="ident">prev_len</span>;
-            <span class="ident">len</span> <span class="op">*=</span> <span class="number">2</span>;
-            <span class="ident">prev_len</span> <span class="op">+=</span> <span class="ident">page</span>.<span class="ident">len</span>;
+            <span class="ident">len</span> <span class="kw-2">*</span><span class="op">=</span> <span class="number">2</span>;
+            <span class="ident">prev_len</span> <span class="op">+</span><span class="op">=</span> <span class="ident">page</span>.<span class="ident">len</span>;
 
             <span class="comment">// Ensure we don&#39;t exceed the max address space.</span>
             <span class="macro">debug_assert</span><span class="macro">!</span>(
-                <span class="ident">page</span>.<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span> <span class="op">+</span> <span class="ident">page</span>.<span class="ident">prev_len</span> <span class="op">&lt;</span> (<span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="number">24</span>),
+                <span class="ident">page</span>.<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span> <span class="op">+</span> <span class="ident">page</span>.<span class="ident">prev_len</span> <span class="op">&lt;</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">24</span>),
                 <span class="string">&quot;max = {:b}&quot;</span>,
                 <span class="ident">page</span>.<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span> <span class="op">+</span> <span class="ident">page</span>.<span class="ident">prev_len</span>
             );
@@ -1049,7 +1051,7 @@
     <span class="doccomment">/// Returns a new `Allocator`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The `Allocator` supports concurrent allocation of objects.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">allocator</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">allocator</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">Allocator</span> {
             <span class="ident">pages</span>: <span class="self">self</span>.<span class="ident">pages</span>.<span class="ident">clone</span>(),
         }
@@ -1058,20 +1060,20 @@
     <span class="doccomment">/// Returns a reference to the value stored at the given address.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// `&amp;mut self` is used as the call may update internal cached state.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Address</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Address</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">page_idx</span> <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">page</span>();
         <span class="kw">let</span> <span class="ident">slot_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pages</span>[<span class="ident">page_idx</span>].<span class="ident">slot</span>(<span class="ident">addr</span>);
 
         <span class="comment">// If the address references a slot that was last seen as uninitialized,</span>
         <span class="comment">// the `CachedPage` is updated. This requires acquiring the page lock</span>
         <span class="comment">// and updating the slot pointer and initialized offset.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">page_idx</span>].<span class="ident">init</span> <span class="op">&lt;=</span> <span class="ident">slot_idx</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">page_idx</span>].<span class="ident">init</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">slot_idx</span> {
             <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">page_idx</span>].<span class="ident">refresh</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pages</span>[<span class="ident">page_idx</span>]);
         }
 
         <span class="comment">// If the address **still** references an uninitialized slot, then the</span>
         <span class="comment">// address is invalid and `None` is returned.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">page_idx</span>].<span class="ident">init</span> <span class="op">&lt;=</span> <span class="ident">slot_idx</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">page_idx</span>].<span class="ident">init</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">slot_idx</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
@@ -1116,20 +1118,20 @@
         <span class="comment">// Iterate each page except the very first one. The very first page is</span>
         <span class="comment">// never freed.</span>
         <span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">page</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">pages</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
-            <span class="kw">if</span> <span class="ident">page</span>.<span class="ident">used</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">!=</span> <span class="number">0</span> <span class="op">||</span> <span class="op">!</span><span class="ident">page</span>.<span class="ident">allocated</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) {
+            <span class="kw">if</span> <span class="ident">page</span>.<span class="ident">used</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">page</span>.<span class="ident">allocated</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) {
                 <span class="comment">// If the page has slots in use or the memory has not been</span>
                 <span class="comment">// allocated then it cannot be compacted.</span>
                 <span class="kw">continue</span>;
             }
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slots</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">page</span>.<span class="ident">slots</span>.<span class="ident">try_lock</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">slots</span>) <span class="op">=&gt;</span> <span class="ident">slots</span>,
+                <span class="prelude-val">Some</span>(<span class="ident">slots</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">slots</span>,
                 <span class="comment">// If the lock cannot be acquired due to being held by another</span>
                 <span class="comment">// thread, don&#39;t try to compact the page.</span>
-                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">continue</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">continue</span>,
             };
 
-            <span class="kw">if</span> <span class="ident">slots</span>.<span class="ident">used</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">||</span> <span class="ident">slots</span>.<span class="ident">slots</span>.<span class="ident">capacity</span>() <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">slots</span>.<span class="ident">used</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">slots</span>.<span class="ident">slots</span>.<span class="ident">capacity</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="comment">// The page is in use or it has not yet been allocated. Either</span>
                 <span class="comment">// way, there is no more work to do.</span>
                 <span class="kw">continue</span>;
@@ -1146,7 +1148,7 @@
             <span class="ident">drop</span>(<span class="ident">slots</span>);
 
             <span class="macro">debug_assert</span><span class="macro">!</span>(
-                <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">idx</span>].<span class="ident">slots</span>.<span class="ident">is_null</span>() <span class="op">||</span> <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">idx</span>].<span class="ident">slots</span> <span class="op">==</span> <span class="ident">vec</span>.<span class="ident">as_ptr</span>(),
+                <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">idx</span>].<span class="ident">slots</span>.<span class="ident">is_null</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">idx</span>].<span class="ident">slots</span> <span class="op">=</span><span class="op">=</span> <span class="ident">vec</span>.<span class="ident">as_ptr</span>(),
                 <span class="string">&quot;cached = {:?}; actual = {:?}&quot;</span>,
                 <span class="self">self</span>.<span class="ident">cached</span>[<span class="ident">idx</span>].<span class="ident">slots</span>,
                 <span class="ident">vec</span>.<span class="ident">as_ptr</span>(),
@@ -1162,7 +1164,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Slab</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">debug</span>(<span class="ident">fmt</span>, <span class="string">&quot;Slab&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pages</span>[..])
     }
 }
@@ -1174,7 +1176,7 @@
     <span class="doccomment">/// Pages are allocated if necessary.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Returns `None` if the slab is full.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">allocate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Address</span>, <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">allocate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Address</span>, <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
         <span class="comment">// Find the first available slot.</span>
         <span class="kw">for</span> <span class="ident">page</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pages</span>[..] {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">addr</span>, <span class="ident">val</span>)) <span class="op">=</span> <span class="ident">Page</span>::<span class="ident">allocate</span>(<span class="ident">page</span>) {
@@ -1187,7 +1189,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">debug</span>(<span class="ident">fmt</span>, <span class="string">&quot;slab::Allocator&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pages</span>[..])
     }
 }
@@ -1195,7 +1197,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ops</span>::<span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span>;
 
-    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
         <span class="comment">// Safety: `&amp;mut` is never handed out to the underlying value. The page</span>
         <span class="comment">// is not freed until all `Ref` values are dropped.</span>
         <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">value</span>).<span class="ident">value</span> }
@@ -1211,7 +1213,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">fmt</span>(<span class="ident">fmt</span>)
     }
 }
@@ -1221,9 +1223,9 @@
     <span class="comment">//</span>
     <span class="comment">// `self: &amp;Arc&lt;Page&lt;T&gt;&gt;` is avoided here as this would not work with the</span>
     <span class="comment">// loom `Arc`.</span>
-    <span class="kw">fn</span> <span class="ident">allocate</span>(<span class="ident">me</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Address</span>, <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">allocate</span>(<span class="ident">me</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Address</span>, <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
         <span class="comment">// Before acquiring the lock, use the `used` hint.</span>
-        <span class="kw">if</span> <span class="ident">me</span>.<span class="ident">used</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">==</span> <span class="ident">me</span>.<span class="ident">len</span> {
+        <span class="kw">if</span> <span class="ident">me</span>.<span class="ident">used</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">me</span>.<span class="ident">len</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
@@ -1245,7 +1247,7 @@
             <span class="ident">locked</span>.<span class="ident">head</span> <span class="op">=</span> <span class="ident">slot</span>.<span class="ident">next</span> <span class="kw">as</span> <span class="ident">usize</span>;
 
             <span class="comment">// Increment the number of used slots</span>
-            <span class="ident">locked</span>.<span class="ident">used</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">locked</span>.<span class="ident">used</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             <span class="ident">me</span>.<span class="ident">used</span>.<span class="ident">store</span>(<span class="ident">locked</span>.<span class="ident">used</span>, <span class="ident">Relaxed</span>);
 
             <span class="comment">// Reset the slot</span>
@@ -1253,7 +1255,7 @@
 
             <span class="comment">// Return a reference to the slot</span>
             <span class="prelude-val">Some</span>((<span class="ident">me</span>.<span class="ident">addr</span>(<span class="ident">idx</span>), <span class="ident">slot</span>.<span class="ident">gen_ref</span>(<span class="ident">me</span>)))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">me</span>.<span class="ident">len</span> <span class="op">==</span> <span class="ident">locked</span>.<span class="ident">slots</span>.<span class="ident">len</span>() {
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">me</span>.<span class="ident">len</span> <span class="op">=</span><span class="op">=</span> <span class="ident">locked</span>.<span class="ident">slots</span>.<span class="ident">len</span>() {
             <span class="comment">// The page is full</span>
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
@@ -1261,7 +1263,7 @@
             <span class="comment">// capacity. Initialize a new slot.</span>
             <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">locked</span>.<span class="ident">slots</span>.<span class="ident">len</span>();
 
-            <span class="kw">if</span> <span class="ident">idx</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">idx</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="comment">// The page has not yet been allocated. Allocate the storage for</span>
                 <span class="comment">// all page slots.</span>
                 <span class="ident">locked</span>.<span class="ident">slots</span>.<span class="ident">reserve_exact</span>(<span class="ident">me</span>.<span class="ident">len</span>);
@@ -1277,10 +1279,10 @@
             });
 
             <span class="comment">// Increment the head to indicate the free stack is empty</span>
-            <span class="ident">locked</span>.<span class="ident">head</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">locked</span>.<span class="ident">head</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
             <span class="comment">// Increment the number of used slots</span>
-            <span class="ident">locked</span>.<span class="ident">used</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">locked</span>.<span class="ident">used</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             <span class="ident">me</span>.<span class="ident">used</span>.<span class="ident">store</span>(<span class="ident">locked</span>.<span class="ident">used</span>, <span class="ident">Relaxed</span>);
             <span class="ident">me</span>.<span class="ident">allocated</span>.<span class="ident">store</span>(<span class="bool-val">true</span>, <span class="ident">Relaxed</span>);
 
@@ -1294,18 +1296,18 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Returns the slot index within the current page referenced by the given</span>
     <span class="doccomment">/// address.</span>
-    <span class="kw">fn</span> <span class="ident">slot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Address</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">slot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Address</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">addr</span>.<span class="number">0</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">prev_len</span>
     }
 
     <span class="doccomment">/// Returns the address for the given slot</span>
-    <span class="kw">fn</span> <span class="ident">addr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">slot</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Address</span> {
+    <span class="kw">fn</span> <span class="ident">addr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">slot</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Address</span> {
         <span class="ident">Address</span>(<span class="ident">slot</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">prev_len</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">Page</span> {
             <span class="ident">used</span>: <span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
             <span class="ident">allocated</span>: <span class="ident">AtomicBool</span>::<span class="ident">new</span>(<span class="bool-val">false</span>),
@@ -1328,7 +1330,7 @@
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">locked</span>.<span class="ident">index_for</span>(<span class="ident">value</span>);
         <span class="ident">locked</span>.<span class="ident">slots</span>[<span class="ident">idx</span>].<span class="ident">next</span> <span class="op">=</span> <span class="ident">locked</span>.<span class="ident">head</span> <span class="kw">as</span> <span class="ident">u32</span>;
         <span class="ident">locked</span>.<span class="ident">head</span> <span class="op">=</span> <span class="ident">idx</span>;
-        <span class="ident">locked</span>.<span class="ident">used</span> <span class="op">-=</span> <span class="number">1</span>;
+        <span class="ident">locked</span>.<span class="ident">used</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
 
         <span class="self">self</span>.<span class="ident">used</span>.<span class="ident">store</span>(<span class="ident">locked</span>.<span class="ident">used</span>, <span class="ident">Relaxed</span>);
     }
@@ -1346,7 +1348,7 @@
     }
 
     <span class="comment">// Get a value by index</span>
-    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">idx</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">init</span>);
 
         <span class="comment">// Safety: Pages are allocated concurrently, but are only ever</span>
@@ -1365,7 +1367,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">CachedPage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">CachedPage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CachedPage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">CachedPage</span> {
             <span class="ident">slots</span>: <span class="ident">ptr</span>::<span class="ident">null</span>(),
             <span class="ident">init</span>: <span class="number">0</span>,
@@ -1384,17 +1386,17 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// panics if the provided slot pointer is not contained by the page.</span>
-    <span class="kw">fn</span> <span class="ident">index_for</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">slot</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">index_for</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">slot</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 
         <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">slots</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">usize</span>;
 
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">base</span> <span class="op">!=</span> <span class="number">0</span>, <span class="string">&quot;page is unallocated&quot;</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">base</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>, <span class="string">&quot;page is unallocated&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">slot</span> <span class="op">=</span> <span class="ident">slot</span> <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">Slot</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>();
+        <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">Slot</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">slot</span> <span class="op">&gt;=</span> <span class="ident">base</span>, <span class="string">&quot;unexpected pointer&quot;</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">slot</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">base</span>, <span class="string">&quot;unexpected pointer&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> (<span class="ident">slot</span> <span class="op">-</span> <span class="ident">base</span>) <span class="op">/</span> <span class="ident">width</span>;
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">idx</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">slots</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">usize</span>);
@@ -1405,7 +1407,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Entry</span><span class="op">&gt;</span> <span class="ident">Slot</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Generates a `Ref` for the slot. This involves bumping the page&#39;s ref count.</span>
-    <span class="kw">fn</span> <span class="ident">gen_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">page</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">gen_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">page</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="comment">// The ref holds a ref on the page. The `Arc` is forgotten here and is</span>
         <span class="comment">// resurrected in `release` when the `Ref` is dropped. By avoiding to</span>
         <span class="comment">// hold on to an explicit `Arc` value, the struct size of `Ref` is</span>
@@ -1420,7 +1422,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="comment">// Release the slot, returning the `Arc&lt;Page&lt;T&gt;&gt;` logically owned by the ref.</span>
-    <span class="kw">fn</span> <span class="ident">release</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">release</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// Safety: called by `Ref`, which owns an `Arc&lt;Page&lt;T&gt;&gt;` instance.</span>
         <span class="kw">let</span> <span class="ident">page</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Arc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">page</span>) };
         <span class="ident">page</span>.<span class="ident">release</span>(<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>);
@@ -1429,7 +1431,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Address</span> {
-    <span class="kw">fn</span> <span class="ident">page</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">page</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="comment">// Since every page is twice as large as the previous page, and all page</span>
         <span class="comment">// sizes are powers of two, we can determine the page index that</span>
         <span class="comment">// contains a given address by shifting the address down by the smallest</span>
@@ -1439,27 +1441,27 @@
         <span class="comment">// of leading zeros (unused twos places) in the number&#39;s binary</span>
         <span class="comment">// representation, and subtracting that count from the total number of</span>
         <span class="comment">// bits in a word.</span>
-        <span class="kw">let</span> <span class="ident">slot_shifted</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">PAGE_INITIAL_SIZE</span>) <span class="op">&gt;&gt;</span> <span class="ident">PAGE_INDEX_SHIFT</span>;
+        <span class="kw">let</span> <span class="ident">slot_shifted</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">PAGE_INITIAL_SIZE</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">PAGE_INDEX_SHIFT</span>;
         (<span class="ident">bit</span>::<span class="ident">pointer_width</span>() <span class="op">-</span> <span class="ident">slot_shifted</span>.<span class="ident">leading_zeros</span>()) <span class="kw">as</span> <span class="ident">usize</span>
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_usize</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_usize</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="number">0</span>
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_usize</span>(<span class="ident">src</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Address</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_usize</span>(<span class="ident">src</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Address</span> {
         <span class="ident">Address</span>(<span class="ident">src</span>)
     }
 }
 
-<span class="kw">fn</span> <span class="ident">debug</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">pages</span>: <span class="kw-2">&amp;</span>[<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>]) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">fn</span> <span class="ident">debug</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">pages</span>: <span class="kw-2">&amp;</span>[<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Page</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">capacity</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">0</span>;
 
     <span class="kw">for</span> <span class="ident">page</span> <span class="kw">in</span> <span class="ident">pages</span> {
         <span class="kw">if</span> <span class="ident">page</span>.<span class="ident">allocated</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) {
-            <span class="ident">capacity</span> <span class="op">+=</span> <span class="ident">page</span>.<span class="ident">len</span>;
-            <span class="ident">len</span> <span class="op">+=</span> <span class="ident">page</span>.<span class="ident">used</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
+            <span class="ident">capacity</span> <span class="op">+</span><span class="op">=</span> <span class="ident">page</span>.<span class="ident">len</span>;
+            <span class="ident">len</span> <span class="op">+</span><span class="op">=</span> <span class="ident">page</span>.<span class="ident">used</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
         }
     }
 
@@ -1481,7 +1483,7 @@
     }
 
     <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Foo</span> {
-        <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">Foo</span> {
+        <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Foo</span> {
             <span class="ident">Foo</span> {
                 <span class="ident">cnt</span>: <span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
                 <span class="ident">id</span>: <span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
@@ -1600,7 +1602,7 @@
             <span class="kw">let</span> (<span class="ident">addr</span>, <span class="ident">val</span>) <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">allocate</span>().<span class="ident">unwrap</span>();
             <span class="ident">val</span>.<span class="ident">id</span>.<span class="ident">store</span>(<span class="ident">i</span>, <span class="ident">SeqCst</span>);
 
-            <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="ident">entries1</span>.<span class="ident">push</span>((<span class="ident">addr</span>, <span class="ident">val</span>, <span class="ident">i</span>));
             } <span class="kw">else</span> {
                 <span class="ident">entries2</span>.<span class="ident">push</span>(<span class="ident">val</span>);

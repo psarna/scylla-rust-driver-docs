@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["BatchStatement","This enum represents a CQL statement, that can be part of batch."]],"struct":[["Batch","CQL batch statement."]]});

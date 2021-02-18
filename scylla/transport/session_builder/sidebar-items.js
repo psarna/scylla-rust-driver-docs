@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SessionBuilder","SessionBuilder is used to create new Session instances"]]});

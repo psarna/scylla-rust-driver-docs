@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Compression","The wire protocol compression algorithm."]],"mod":[["connection",""],["iterator",""],["session",""]]});
+initSidebarItems({"enum":[["Compression","The wire protocol compression algorithm."]],"mod":[["connection",""],["errors",""],["iterator",""],["load_balancing",""],["session",""],["session_builder",""]]});
